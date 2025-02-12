@@ -1,6 +1,6 @@
 # Introducing Uiineed Todo List
 
-<img src="public/img/ricocc/Preview-uiineed-todo-list-en.png" alt="ricocc-wechat" width="640" height="auto" style="display:inline-block;margin:12px;">
+<img src="public/img/ricocc/preview-uiineed-todo-list-en.png" alt="ricocc-wechat" width="640" height="auto" style="display:inline-block;margin:12px;">
 
 
 Using a Todo List is very common in work. There are many Todo List products on the market, whether they are desktop applications or mobile apps/mini-programs. These products often consider diverse user needs, developing various features, including some social attributes, and even inevitably containing advertisements.
