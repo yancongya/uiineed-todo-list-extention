@@ -1,4 +1,8 @@
 # Introducing Uiineed Todo List
+
+<img src="public/img/ricocc/Preview-uiineed-todo-list-en.png" alt="ricocc-wechat" width="640" height="auto" style="display:inline-block;margin:12px;">
+
+
 Using a Todo List is very common in work. There are many Todo List products on the market, whether they are desktop applications or mobile apps/mini-programs. These products often consider diverse user needs, developing various features, including some social attributes, and even inevitably containing advertisements.
 
 My personal product requirements are: basic, clean and simple, no need for extra features, and visually satisfactory.
@@ -62,6 +66,8 @@ The personal information section is as follows:
 
 ## 中文介绍
 
+<img src="public/img/ricocc/Preview-uiineed-todo-list-zh.png" alt="ricocc-wechat" width="640" height="auto" style="display:inline-block;margin:12px;">
+
 在工作时使用 Todo List 是非常常见的,市面上的 Todo List 类产品非常多,无论是电脑端的应用还是手机端的 APP、小程序等,而且也考虑用户的多样化需求,开发了各种功能,还有一些社交属性,有些还免不了广告的存在。
 
 我个人的产品诉求是:基础、干净简洁、不需要额外功能、视觉合格。
@@ -110,6 +116,10 @@ The personal information section is as follows:
 - ✔️ 右侧的小窗口是快捷操作哦
 - 🔒 所有的Todo数据存储在浏览器本地
 - 📝 支持下载和导入，导入追加到当前序列
+
+
+
+
 
 ### 💜支持作者
 
