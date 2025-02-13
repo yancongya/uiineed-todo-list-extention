@@ -5,7 +5,9 @@
 <img src="public/img/ricocc/preview-uiineed-todo-list-zh.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
 <img src="public/img/ricocc/preview-uiineed-todo-list-zh-2.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
 
-***静态文件，下载打开即可使用，默认是 index.html英文，index-zh.html 为中文。***
+***静态文件，本地下载打开即可使用，默认是 index.html英文，index-zh.html 为中文。***
+
+中文版线上地址： <a href="https://ricocc.com/todo/" target="_blank">Ricocc Todo 待办清单 </a>
  
 在工作时使用 Todo List 是非常常见的,市面上的 Todo List 类产品非常多,无论是电脑端的应用还是手机端的 APP、小程序等,而且也考虑用户的多样化需求,开发了各种功能,还有一些社交属性,有些还免不了广告的存在。
 
