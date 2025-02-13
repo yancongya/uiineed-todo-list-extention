@@ -1,73 +1,10 @@
-# Introducing Uiineed Todo List
+# Uiineed Todo List 介绍
+[English Intro Click Here](#intro)
+<img src="public/img/ricocc/preview-uiineed-todo-list-zh.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
+<img src="public/img/ricocc/preview-uiineed-todo-list-zh-2.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
 
-<img src="public/img/ricocc/preview-uiineed-todo-list-en.png" alt="ricocc-wechat" width="640" height="auto" style="display:inline-block;margin:12px;">
-
-
-Using a Todo List is very common in work. There are many Todo List products on the market, whether they are desktop applications or mobile apps/mini-programs. These products often consider diverse user needs, developing various features, including some social attributes, and even inevitably containing advertisements.
-
-My personal product requirements are: basic, clean and simple, no need for extra features, and visually satisfactory.
-
-So I decided to try writing my own Todo List application, which can not only meet my different daily ideas and needs, but also allow me to decide the visual style, no matter how quirky, as long as I like it.
-
-In the design, I referenced the Noted design specification from the Figma community by aakarshna, and made adjustments based on my own design. On the front-end, I used Vue 2.x and Sass, and tried to use base64 to reduce the number of files.
-
-
-## Authors
-- Ricocc ([@ricouii](https://x.com/ricouii))
-- Rico's Blog <a href="https://blog.ricocc.com/" target="_blank">@Ricouii</a>
-- 小红书：  <a href="https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f" target="_blank">@Rico的设计漫想</a>
-- X - <a href="https://x.com/ricouii" target="_blank">@Ricouii</a>
-
-
-
-
-## Usage
-
-To keep things as simple as possible, I used a CDN to import Vue, so there's no need to install anything - just download and open the html file to use it.
-
-If you host it yourself, you can also customize the personal information displayed on the page. To avoid interference with the experience, I've commented this out by default. If you need it, just uncomment and modify the information to your own.
-
-The personal information section is as follows:
-
-```html
-<!-- Custom Info -->
-    <div class="nav">
-        <!-- Github Address -->
-        <!-- <div class="github">
-            <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link">
-                <img src="public/img/social/github.svg" class="ic-social" alt="">
-            </a>
-        </div> -->
-        <!-- <div class="about">
-                ...Customized personal information, hidden by default to avoid affecting the experience
-                ...If you want to display it, you can uncomment the code
-        </div> -->
-
-        <!-- Switch between Chinese and English pages -->
-        <div class="language switch-language">
-            <a href="javascript:void(0)" class="en active">En</a>
-            <span>/</span>
-            <a href="index-zh.html" target="_self" class="zh">中</a>
-        </div>
-    </div>
-```
-#### Usage Tips 💡
-- ✔️ Press Enter to submit all actions
-- ✔️ Drag to reorder your to-dos (PC only)
-- ✔️ Double-click to edit slogan and tasks
-- ✔️ Access quick actions in the right sidebar
-- 🔒 Your data is stored locally in your browser
-- 📝 Supports data download and import (appends to current list)
----
-
-
-
-
-
-## 中文介绍
-
-<img src="public/img/ricocc/Preview-uiineed-todo-list-zh.png" alt="ricocc-wechat" width="640" height="auto" style="display:inline-block;margin:12px;">
-
+***静态文件，下载打开即可使用，默认是 index.html英文，index-zh.html 为中文。***
+ 
 在工作时使用 Todo List 是非常常见的,市面上的 Todo List 类产品非常多,无论是电脑端的应用还是手机端的 APP、小程序等,而且也考虑用户的多样化需求,开发了各种功能,还有一些社交属性,有些还免不了广告的存在。
 
 我个人的产品诉求是:基础、干净简洁、不需要额外功能、视觉合格。
@@ -117,7 +54,89 @@ The personal information section is as follows:
 - 🔒 所有的Todo数据存储在浏览器本地
 - 📝 支持下载和导入，导入追加到当前序列
 
+## 作者
 
+- 小红书关注更新：<a href="https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f" target="_blank">@Rico的设计漫想</a>
+- Rico's 博客 <a href="https://blog.ricocc.com/" target="_blank">@Ricocc</a>
+- X - <a href="https://x.com/ricouii" target="_blank">@Ricouii</a>
+
+## 推荐项目
+- <a href="https://github.com/ricocc/public-portfolio-site/" target="_blank">⭐Star Github- Ricocc 开源博客 </a>
+- <a href="https://webinspo.uiineed.com/" target="_blank">💻 网页灵感站</a>
+- <a href="https://og.uiineed.com/" target="_blank">🖼 免费 OG Image 生成器</a>
+
+
+---
+<br/>
+<div id="intro"></div>
+
+
+# Introducing Uiineed Todo List
+<img src="public/img/ricocc/preview-uiineed-todo-list-en.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
+
+<img src="public/img/ricocc/preview-uiineed-todo-list-en-2.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
+
+Using a Todo List is very common in work. There are many Todo List products on the market, whether they are desktop applications or mobile apps/mini-programs. These products often consider diverse user needs, developing various features, including some social attributes, and even inevitably containing advertisements.
+
+My personal product requirements are: basic, clean and simple, no need for extra features, and visually satisfactory.
+
+So I decided to try writing my own Todo List application, which can not only meet my different daily ideas and needs, but also allow me to decide the visual style, no matter how quirky, as long as I like it.
+
+In the design, I referenced the Noted design specification from the Figma community by aakarshna, and made adjustments based on my own design. On the front-end, I used Vue 2.x and Sass, and tried to use base64 to reduce the number of files.
+
+
+## Usage
+
+To keep things as simple as possible, I used a CDN to import Vue, so there's no need to install anything - just download and open the html file to use it.
+
+If you host it yourself, you can also customize the personal information displayed on the page. To avoid interference with the experience, I've commented this out by default. If you need it, just uncomment and modify the information to your own.
+
+The personal information section is as follows:
+
+```html
+<!-- Custom Info -->
+    <div class="nav">
+        <!-- Github Address -->
+        <!-- <div class="github">
+            <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link">
+                <img src="public/img/social/github.svg" class="ic-social" alt="">
+            </a>
+        </div> -->
+        <!-- <div class="about">
+                ...Customized personal information, hidden by default to avoid affecting the experience
+                ...If you want to display it, you can uncomment the code
+        </div> -->
+
+        <!-- Switch between Chinese and English pages -->
+        <div class="language switch-language">
+            <a href="javascript:void(0)" class="en active">En</a>
+            <span>/</span>
+            <a href="index-zh.html" target="_self" class="zh">中</a>
+        </div>
+    </div>
+```
+#### Usage Tips 💡
+- ✔️ Press Enter to submit all actions
+- ✔️ Drag to reorder your to-dos (PC only)
+- ✔️ Double-click to edit slogan and tasks
+- ✔️ Access quick actions in the right sidebar
+- 🔒 Your data is stored locally in your browser
+- 📝 Supports data download and import (appends to current list)
+
+## Authors
+- Rico's Blog <a href="https://blog.ricocc.com/" target="_blank">@Ricocc</a>
+- 小红书：  <a href="https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f" target="_blank">@Rico的设计漫想</a>
+- X - <a href="https://x.com/ricouii" target="_blank">@Ricouii</a>
+
+## Recommend
+- <a href="https://github.com/ricocc/public-portfolio-site/" target="_blank">⭐Star Github- Ricocc's Blog </a>
+- <a href="https://webinspo.uiineed.com/" target="_blank">💻 Web Design Inspiration</a>
+- <a href="https://og.uiineed.com/" target="_blank">🖼 Free OG Image Generator</a>
+
+
+
+
+---
 
 
 
@@ -126,6 +145,8 @@ The personal information section is as follows:
 如果觉得有所帮助的话，一点点支持就可以大大激励创作者的热情，感谢！
 
 <img src="public/img/ricocc/zanshangma.jpg" alt="ricocc-wechat" width="280" height="auto" style="display:inline-block;margin:12px;">
+
+
 
 
 
