@@ -1,5 +1,7 @@
 # Uiineed Todo List 介绍
-[English Intro Click Here](#intro)
+
+[📍 English Intro Click Here](#intro)
+
 <img src="public/img/ricocc/preview-uiineed-todo-list-zh.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
 <img src="public/img/ricocc/preview-uiineed-todo-list-zh-2.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
 
