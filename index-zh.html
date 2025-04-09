@@ -23,7 +23,7 @@
             <div class="container header ">
                 <div class="todo-input">
                     <h1 class="title">
-                        <img src="public/img/todo.svg" alt="" class="title-1">
+                        <img src="public/img/todo.svg" alt="" class="title-1" draggable="false">
                         <div class="ani-vector">
                             <span></span>
                             <span></span>
@@ -113,7 +113,7 @@
                             <!-- 删除 -->
                             <div class="todo-btn btn-delete" v-else="todo.removed" @click="removeTodo(todo)">
                                 <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS4wOTkzIDE3Ljc1OTdDMTUuNzk0OSAxOC4yMDk4IDE2LjcyMzUgMTguMDEwOCAxNy4xNzM2IDE3LjMxNTJDMTcuNjIzNiAxNi42MTk3IDE3LjQyNDYgMTUuNjkxMSAxNi43MjkxIDE1LjI0MUMxMy4zMDc5IDEzLjAyNzMgMTAuODIwOSAxMC45OTU5IDguOTIyNTEgOS4wMzczOUM5LjA5NzQyIDguODQ5ODIgOS4yNzI5MSA4LjY2NTcxIDkuNDQ4ODggOC40ODUzNEMxMS44ODY0IDUuOTg2OTIgMTQuMjQ3MiA0LjM4MDY2IDE2LjI5NDQgMy45NzEyMkMxNy4xMDY3IDMuODA4NzUgMTcuNjMzNSAzLjAxODUyIDE3LjQ3MTEgMi4yMDYxOEMxNy4zMDg2IDEuMzkzODQgMTYuNTE4NCAwLjg2NzAxMyAxNS43MDYgMS4wMjk0OEMxMi43NTMyIDEuNjIwMDUgOS44NjQwNiAzLjc2Mzc5IDcuMzAxNTQgNi4zOTAzN0M3LjE4MTUxIDYuNTEzNCA3LjA2MTgxIDYuNjM3ODkgNi45NDI0OSA2Ljc2Mzc1QzUuNDIwMDEgNC44MDQzMyA0LjM3MDU4IDIuODc2MzIgMy40MjU5MSAwLjg2MzE2NEMzLjA3Mzk5IDAuMTEzMjAyIDIuMTgwNzMgLTAuMjA5NDc1IDEuNDMwNzcgMC4xNDI0NDVDMC42ODA4MDkgMC40OTQzNjUgMC4zNTgxMzIgMS4zODc2MiAwLjcxMDA1MSAyLjEzNzU4QzEuODIwODggNC41MDQ4MSAzLjA3ODk5IDYuNzY1MTEgNC45MjkzMiA5LjA1MzA2QzMuMjIyMDYgMTEuMTM0MSAxLjYyNjY5IDEzLjQzMjggMC4yMjI3MjMgMTUuNzE0MkMtMC4yMTE0NTMgMTYuNDE5NyAwLjAwODUyNzUyIDE3LjM0MzcgMC43MTQwNjQgMTcuNzc3OEMxLjQxOTYgMTguMjEyIDIuMzQzNTIgMTcuOTkyIDIuNzc3NyAxNy4yODY1QzQuMDQ4MTkgMTUuMjIyIDUuNDY0MDUgMTMuMTcyNiA2Ljk1NTU5IDExLjMxNjhDOC45ODUgMTMuMzc2NSAxMS41OTU5IDE1LjQ5MjggMTUuMDk5MyAxNy43NTk3WiIgZmlsbD0iIzMzMzIyRSIvPgo8L3N2Zz4K"
-                                alt="删除">
+                                alt="删除" draggable="false">
                             </div>
                             <!-- 编辑 -->
                             <div class="edit-todo-wrapper" v-if="editedTodo !== null && editedTodo.id === todo.id">
@@ -189,10 +189,10 @@
             </div>
 
              <!-- 自定义个人的信息 -->
-            <div class="nav">
+            <div class="nav" draggable="false">
                 <div class="github">
-                    <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link">
-                        <img src="public/img/social/github.svg" class="ic-social" alt="">
+                    <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link" draggable="false">
+                        <img src="public/img/social/github.svg" class="ic-social" alt="" draggable="false">
                     </a>
                 </div>
                 <!-- <div class="about">
@@ -236,9 +236,9 @@
                 </div> -->
                 <!-- 根据需要切换中英文作为首页 -->
                 <div class="language switch-language">
-                    <a href="index.html" class="en">En</a>
+                    <a href="index.html" class="en" draggable="false">En</a>
                     <span>/</span>
-                    <a href="javascript:;" target="_self" class="zh active">中</a>
+                    <a href="javascript:;" target="_self" class="zh active" draggable="false">中</a>
                 </div>
             </div>
 
