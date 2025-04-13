@@ -362,11 +362,8 @@
                     <div class="language switch-language">
                         <a href="javascript:void(0)" class="en active" draggable="false">En</a>
                         <span>/</span>
-                        <a href="index-zh.html" target="_self" class="zh" draggable="false" onclick='saveLanguage("zh")'>中</a>
+                        <a href="index-zh.html" target="_self" class="zh" draggable="false" @click="saveLanguage('zh')">中</a>
                     </div>
-                    <script>
-                        const saveLanguage = (lang) => localStorage.setItem('uiineed-todos-lang', 'zh');
-                    </script>
                 </div>
 
             </div>
@@ -598,6 +595,9 @@
                     },
                     afterEnter(dom) {
                         dom.classList.remove('drag-enter-to');
+                    },
+                    saveLanguage(lang) {
+                        localStorage.setItem('uiineed-todos-lang', lang);
                     }
                 },
 
