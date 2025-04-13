@@ -245,13 +245,10 @@
                 </div> -->
                 <!-- 根据需要切换中英文作为首页 -->
                 <div class="language switch-language">
-                    <a href="index.html" class="en" draggable="false" onclick='saveLanguage("en")'>En</a>
+                    <a href="index.html" class="en" draggable="false" @click="saveLanguage('en')">En</a>
                     <span>/</span>
                     <a href="javascript:;" target="_self" class="zh active" draggable="false">中</a>
                 </div>
-                <script>
-                    const saveLanguage = (lang) => localStorage.setItem('uiineed-todos-lang', 'en');
-                </script>
             </div>
 
         </div>
@@ -491,6 +488,9 @@
                 },
                 afterEnter(dom) {
                     dom.classList.remove('drag-enter-to');
+                },
+                saveLanguage(lang) {
+                    localStorage.setItem('uiineed-todos-lang', lang);
                 }
             },
             mounted() {
