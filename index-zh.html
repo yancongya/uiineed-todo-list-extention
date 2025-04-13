@@ -102,7 +102,7 @@
                             @dragenter="dragenter($event, index)" @dragover="dragover($event, index)"
                             @dragstart="dragstart(index)"
                             :data-delay="index * 150 * delayTime"
-                            v-show="show" 
+                            v-show="show"
                             :draggable="!(editedTodo !== null && editedTodo.id === todo.id)">
                             <div class="todo-content" :class='{completed:todo.completed}' @dblclick="editdTodo(todo)">
                                 {{todo.title}}</div>
@@ -245,7 +245,7 @@
                 </div> -->
                 <!-- 根据需要切换中英文作为首页 -->
                 <div class="language switch-language">
-                    <a href="index.html" class="en" draggable="false" onclick="saveLanguage('en')">En</a>
+                    <a href="index.html" class="en" draggable="false" onclick='saveLanguage("en")'>En</a>
                     <span>/</span>
                     <a href="javascript:;" target="_self" class="zh active" draggable="false">中</a>
                 </div>
