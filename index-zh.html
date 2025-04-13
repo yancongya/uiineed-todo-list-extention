@@ -14,10 +14,11 @@
     <link href="public/css/style.min.css" rel="stylesheet" media="screen">
     <script>
         // 自动判断语言并切换
-        const userLanguage = localStorage.getItem('uiineed-todos-lang');
         const browserLanguage = navigator.language || navigator.userLanguage;
         const languageCode = browserLanguage.split('-')[0].toLowerCase();
-        if ((!userLanguage && languageCode !== "zh") || (userLanguage && userLanguage !== "zh")) window.location.href = window.location.href.replace('index-zh.html', 'index.html');
+        if (!localStorage.getItem('uiineed-todos-lang')) localStorage.setItem('uiineed-todos-lang', languageCode);
+        const userLanguage = localStorage.getItem('uiineed-todos-lang');
+        if (userLanguage && userLanguage !== "zh") window.location.href = (window.location.pathname === "/") ? 'index.html' : window.location.href.replace('index-zh.html', 'index.html');
     </script>
     <!-- Vue 2.x  Todo List   使用CDN就无需引入本地文件 -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script> -->
@@ -244,7 +245,7 @@
                 </div> -->
                 <!-- 根据需要切换中英文作为首页 -->
                 <div class="language switch-language">
-                    <a href="index.html?lang=en" class="en" draggable="false" onclick="saveLanguage('en')">En</a>
+                    <a href="index.html" class="en" draggable="false" onclick="saveLanguage('en')">En</a>
                     <span>/</span>
                     <a href="javascript:;" target="_self" class="zh active" draggable="false">中</a>
                 </div>
