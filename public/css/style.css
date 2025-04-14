@@ -209,6 +209,8 @@ h1 {
       -ms-flex-align: start;
           align-items: flex-start;
   position: relative;
+  flex-direction: column;
+  gap: 23px;
 }
 
 .bg-pattern {
@@ -1689,4 +1691,72 @@ span.shortcut-name {
     -webkit-transform: scale3d(0.3, 0.3, 0.3);
     transform: scale3d(0.3, 0.3, 0.3);
   }
+}
+
+.custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(51, 50, 46, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-alert {
+  background: var(--bg-normal);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 90%;
+  max-width: 400px;
+  padding: 24px;
+  position: relative;
+  font-family: var(--font);
+  animation: popIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.custom-alert-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--font-color);
+}
+
+.custom-alert-content {
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.custom-alert-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.custom-alert-btn {
+  padding: var(--btn-small-padding);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background: var(--bg-submit);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.35s;
+}
+
+.custom-alert-btn:hover {
+  box-shadow: var(--box-shadow);
+  transform: translate(-2px, -2px);
+}
+
+.custom-alert-btn.confirm {
+  background: var(--completed);
+}
+
+.custom-alert-btn.cancel {
+  background: var(--deleted);
 }
