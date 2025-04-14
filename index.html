@@ -666,30 +666,19 @@
             // Fetch data from localStorage
             var fetchedTodos = todoStorage.fetch();
 
-            function handleClickDownload() {
-                // Get data
-                var fetchedTodos = todoStorage.fetch();
-                // Convert data to text string
-                var todosText = JSON.stringify(fetchedTodos, null, 2);
-                // Get current date and format as "todos-YYYYMMDD.txt"
-                var currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-                var fileName = `todos-${currentDate}.txt`;
-
-                // Create hidden downloadable link
-                var element = document.createElement('a');
-                element.setAttribute(
-                    'href',
-                    'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText)
-                );
-                element.setAttribute('download', fileName);
-
-                // Trigger click
+            const handleClickDownload = () => {
+                const todosText = JSON.stringify(todoStorage.fetch(), null, 2);
+                const date = new Date().toISOString().replace(/-|:|\.\d+/g, '');
+                const fileName = `todos-${date.slice(0, 8)}-${date.slice(9, 15)}.txt`;
+                
+                const element = document.createElement('a');
+                element.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText);
+                element.download = fileName;
+                
                 document.body.appendChild(element);
                 element.click();
-                alert("Successfully exported data to " + fileName);
-                // Cleanup
                 document.body.removeChild(element);
-            }
+            };
 
             // Import file
             let tempFileInput = null; // Store dynamically created file input element
