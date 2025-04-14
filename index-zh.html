@@ -20,6 +20,84 @@
         const userLanguage = localStorage.getItem('uiineed-todos-lang');
         if (userLanguage && userLanguage !== "zh") window.location.href = (window.location.pathname === "/") ? 'index.html' : window.location.href.replace('index-zh.html', 'index.html');
     </script>
+    <script>
+        // 保存原生alert备用
+        const nativeAlert = window.alert;
+
+        // 重写alert方法
+        window.alert = function(message, title = '提示') {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div'); // 遮罩层
+                overlay.className = 'custom-alert-overlay';
+                const alertBox = document.createElement('div'); // 提示框
+                alertBox.className = 'custom-alert';
+                alertBox.innerHTML = `
+<div class="custom-alert-title">${title}</div>
+<div class="custom-alert-content">${message}</div>
+<div class="custom-alert-buttons">
+    <button class="custom-alert-btn confirm">确定</button>
+</div>
+                `;
+                overlay.appendChild(alertBox);
+                document.body.appendChild(overlay);
+                const confirmBtn = alertBox.querySelector('.confirm');
+                confirmBtn.addEventListener('click', () => {
+                    alertBox.style.animation = 'popOut 0.3s forwards';
+                    setTimeout(() => {
+                        document.body.removeChild(overlay);
+                        resolve(true);
+                    }, 300);
+                });
+                overlay.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') confirmBtn.click();
+                });
+                confirmBtn.focus();
+            });
+        };
+
+        // 保存原生confirm备用
+        const nativeConfirm = window.alert;
+
+        // 重写confirm方法
+        window.confirm = function(message, title = '请确认') {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.className = 'custom-alert-overlay';
+                const alertBox = document.createElement('div');
+                alertBox.className = 'custom-alert';
+                alertBox.innerHTML = `
+<div class="custom-alert-title">${title}</div>
+<div class="custom-alert-content">${message}</div>
+<div class="custom-alert-buttons">
+    <button class="custom-alert-btn cancel">取消</button>
+    <button class="custom-alert-btn confirm">确定</button>
+</div>
+                `;
+                overlay.appendChild(alertBox);
+                document.body.appendChild(overlay);
+                const confirmBtn = alertBox.querySelector('.confirm');
+                const cancelBtn = alertBox.querySelector('.cancel');
+                confirmBtn.addEventListener('click', () => {
+                    alertBox.style.animation = 'popOut 0.3s forwards';
+                    setTimeout(() => {
+                        document.body.removeChild(overlay);
+                        resolve(true);
+                    }, 300);
+                });
+                cancelBtn.addEventListener('click', () => {
+                    alertBox.style.animation = 'popOut 0.3s forwards';
+                    setTimeout(() => {
+                        document.body.removeChild(overlay);
+                        resolve(false);
+                    }, 300);
+                });
+                overlay.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') cancelBtn.click();
+                });
+                cancelBtn.focus();
+            });
+        };
+    </script>
     <!-- Vue 2.x  Todo List   使用CDN就无需引入本地文件 -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script> -->
     <script src="public/js/vue.js"></script>
@@ -373,14 +451,13 @@
                     todo.completed = false
                 },
                 markAllAsCompleted: function () {
-                    if (!confirm('确认一键勾选完成全部待办事项？')) {
-                        return
-                    }
-                    this.todos.map(function (todo) {
-                        if (!todo.completed) {
-                            todo.completed = true
+                    confirm('确认一键勾选完成全部待办事项？').then((confirmed) => {
+                        if (confirmed) {
+                            this.todos.map(function (todo) {
+                                if (!todo.completed) todo.completed = true;
+                            })
                         }
-                    })
+                    }); 
                 },
                 removeTodo: function (todo) {
                     let removedTodo = this.todos.splice(this.todos.indexOf(todo), 1)[0];
@@ -435,20 +512,22 @@
                     this.editedTodo = null
                 },
                 clearCompleted: function () {
-                    if (!confirm('确认清除全部已完成的代办事项?')) {
-                        return
-                    }
-                    this.completedTodos.map(todo => todo.removed = true);
-                    this.recycleBin.unshift(...this.completedTodos);
-                    this.todos = this.leftTodos;
+                    confirm('确认清除全部已完成的代办事项?').then((confirmed) => {
+                        if (confirmed) {
+                            this.completedTodos.map(todo => todo.removed = true);
+                            this.recycleBin.unshift(...this.completedTodos);
+                            this.todos = this.leftTodos;
+                        }
+                    });
                 },
                 clearAll: function () {
-                    if (!confirm('确认清除全部待办事项?')) {
-                        return
-                    }
-                    this.todos.map(todo => todo.removed = true);
-                    this.recycleBin.unshift(...this.todos);
-                    this.todos = []
+                    confirm('确认清除全部待办事项?').then((confirmed) => {
+                        if (confirmed) {
+                            this.todos.map(todo => todo.removed = true);
+                            this.recycleBin.unshift(...this.todos);
+                            this.todos = []
+                        }
+                    });
                 },
                 //拖拽 ------------------
                 dragstart: function (index) {
@@ -558,25 +637,17 @@
         var fetchedTodos = todoStorage.fetch();
         // 在控制台打印获取到的数据
         // console.log("Stored Todos:", fetchedTodos);
-        function handleClickDownload(){
-            // 获取数据
-            var fetchedTodos = todoStorage.fetch();
-            // 将数据转换为文本字符串
-            var todosText = JSON.stringify(fetchedTodos, null, 2);
-            // 获取当前日期时间并格式化为 "todos-YYYYMMDD.txt"
-            var currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-            var fileName = `todos-${currentDate}.txt`;
-
-            // 创建隐藏的可下载链接
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText));
-            element.setAttribute('download', fileName);
-
-            // 触发点击
+        const handleClickDownload = () => {
+            const todosText = JSON.stringify(todoStorage.fetch(), null, 2);
+            const date = new Date().toISOString().replace(/-|:|\.\d+/g, '');
+            const fileName = `todos-${date.slice(0, 8)}-${date.slice(9, 15)}.txt`;
+            
+            const element = document.createElement('a');
+            element.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText);
+            element.download = fileName;
+            
             document.body.appendChild(element);
             element.click();
-            alert("导出数据 "+fileName+" 成功！");
-            // 清理
             document.body.removeChild(element);
         };
 
@@ -596,10 +667,7 @@
                 // 为文件输入元素添加change事件监听器
                 tempFileInput.addEventListener('change', function(event) {
                     var file = event.target.files[0];
-                    if (!file) {
-                        alert('没有选择文件！');
-                        return;
-                    }
+                    if (!file) return alert('没有选择文件！', '错误');
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         var content = e.target.result;
@@ -630,13 +698,13 @@
                             todoStorage.save(updatedTodos);
                             // 更新页面内容
                             updatePageContent(updatedTodos);
-                            // alert('文件导入成功，数据已追加！');
+                            alert('文件导入成功，数据已追加！');
                         } catch (error) {
-                            alert('文件解析错误，请确保文件格式正确：' + error.message);
+                            alert('文件解析错误，请确保文件格式正确：' + error.message, '错误');
                         }
                     };
                     reader.onerror = function(e) {
-                        alert('读取文件时发生错误：' + e.target.error.name);
+                        alert('读取文件时发生错误：' + e.target.error.name, '错误');
                     };
                     reader.readAsText(file);
                     this.parentNode.removeChild(tempFileInput);
