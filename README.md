@@ -1,161 +1,69 @@
-# Uiineed Todo List 介绍
+# UINeed-Todo-AE
 
-[📍 English Intro Click Here](#intro)
+UINeed-Todo-AE是一款为Adobe After Effects开发的待办事项扩展，帮助AE设计师和创作者在工作环境中直接管理任务列表，并可将任务可视化为文本图层。
 
-<img src="public/img/ricocc/preview-uiineed-todo-list-zh.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
-<img src="public/img/ricocc/preview-uiineed-todo-list-zh-2.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
+## 功能特点
 
-***静态文件，本地下载打开即可使用，默认是 index.html英文，index-zh.html 为中文。***
+- 简单易用的待办事项管理界面
+- 支持添加、编辑、删除和完成待办事项
+- 将待办事项创建为AE文本图层
+- 自动同步待办事项状态到AE图层
+- 数据本地存储，无需联网
+- 支持导出导入待办事项数据
 
-中文版线上地址： <a href="https://ricocc.com/todo/" target="_blank">Ricocc Todo 待办清单 </a>
- 
-在工作时使用 Todo List 是非常常见的,市面上的 Todo List 类产品非常多,无论是电脑端的应用还是手机端的 APP、小程序等,而且也考虑用户的多样化需求,开发了各种功能,还有一些社交属性,有些还免不了广告的存在。
+## 安装方法
 
-我个人的产品诉求是:基础、干净简洁、不需要额外功能、视觉合格。
+### 开发测试安装
 
-所以不如尝试自己写一个 Todo List 应用,既可以满足自己每天不同的想法和需求,也可以自己决定视觉风格,无论多么奇葩,只要自己喜欢就行。
+1. 复制整个扩展文件夹到Adobe CEP扩展目录：
+   - Windows: `C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\`
+   - macOS: `/Library/Application Support/Adobe/CEP/extensions/`
 
-在设计上,我参考了 Figma 社区 aakarshna 的 Noted 设计规范,并根据自己的设计做了调整。在前端上使用了 Vue 2.x 和 Sass,尽量使用 base64 减少文件数量。
+2. 启用CEP调试模式：
+   - Windows: 以管理员身份运行注册表编辑器，添加或修改键值：
+     ```
+     HKEY_CURRENT_USER\Software\Adobe\CSXS.11
+     PlayerDebugMode - "1"
+     ```
+   - macOS: 打开终端执行命令：
+     ```
+     defaults write com.adobe.CSXS.11 PlayerDebugMode 1
+     ```
 
+3. 重启After Effects，在窗口菜单中找到"UINeed Todo AE"并打开。
 
+### 正式安装包（未来提供）
 
-## 使用说明
+1. 下载最新的ZXP安装包
+2. 使用Adobe Exchange或ZXP Installer安装扩展
+3. 重启After Effects，在窗口菜单中找到"UINeed Todo AE"并打开
 
-在使用上为了尽量简洁，我使用了 CDN 的形式引入Vue，不需要安装，下载完直接打开 `html` 文件即可使用。
+## 使用方法
 
-自己上线的话，页面中也可以自定义显示个人的信息，为了体验不造成干扰，我默认注释掉了，如果需要的话，取消注释，修改为自己的信息即可。
+1. 在AE中打开UINeed Todo AE面板
+2. 添加待办事项：在输入框中输入任务内容，点击"提交"或按Enter
+3. 管理待办事项：
+   - 点击圆圈标记完成/未完成
+   - 点击删除图标移除待办事项
+   - 双击文本编辑待办事项
+4. 创建AE图层：
+   - 点击"创建AE图层"按钮将待办事项创建为AE中的文本图层
+   - 点击"更新状态"按钮同步待办事项状态到AE图层
 
-个人信息部分如下：
+## 数据存储
 
-```html
-<!-- Custom Info -->
-    <div class="nav">
-        <!-- Github 仓库地址 -->
-        <!-- <div class="github">
-            <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link">
-                <img src="public/img/social/github.svg" class="ic-social" alt="">
-            </a>
-        </div> -->
-        <!-- <div class="about">
-            ...自定义个人信息，为了不影响体验，默认隐藏
-            ...想显示，可以取消注释
-        </div> -->
+所有待办事项数据保存在扩展根目录的`todo.list`文件中。
 
-        <!-- 切换中英文页面，可以设置中文为主页 -->
-        <div class="language switch-language">
-            <a href="javascript:void(0)" class="en active">En</a>
-            <span>/</span>
-            <a href="index-zh.html" target="_self" class="zh">中</a>
-        </div>
-    </div>
-```
+## 支持和反馈
 
-#### 食用方法 💡
-- ✔️ 所有提交操作支持Enter回车键提交
-- ✔️ 拖拽Todo上下移动可排序(仅支持PC)
-- ✔️ 双击上面的标语和 Todo 可进行编辑
-- ✔️ 右侧的小窗口是快捷操作哦
-- 🔒 所有的Todo数据存储在浏览器本地
-- 📝 支持下载和导入，导入追加到当前序列
+如有问题或建议，请通过以下方式联系我们：
+- GitHub Issues
+- 电子邮件: support@uiineed.com
 
-## 作者
+## 许可证
 
-- 小红书关注更新：<a href="https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f" target="_blank">@Rico的设计漫想</a>
-- Rico's 博客 <a href="https://blog.ricocc.com/" target="_blank">@Ricocc</a>
-- X - <a href="https://x.com/ricouii" target="_blank">@Ricouii</a>
-
-## 推荐项目
-- <a href="https://github.com/ricocc/public-portfolio-site/" target="_blank">⭐Star Github- Ricocc 开源博客 </a>
-- <a href="https://inspoweb.com/" target="_blank">💻 网页灵感站</a>
-- <a href="https://og.uiineed.com/" target="_blank">🖼 免费 OG Image 生成器</a>
-- <a href="https://www.aiwnt.com.cn/toolset" target="_blank">🛠️ 实用AI工具</a>
-- <a href="https://gradientshub.com/" target="_blank">🎨渐变背景和生成工具</a>
-
----
-<br/>
-<div id="intro"></div>
-
-
-# Introducing Uiineed Todo List
-<img src="public/img/ricocc/preview-uiineed-todo-list-en.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
-
-<img src="public/img/ricocc/preview-uiineed-todo-list-en-2.jpg" alt="ricocc-wechat" width="640" height="auto" style="border-radius:12px;display:inline-block;margin:12px;">
-
-Using a Todo List is very common in work. There are many Todo List products on the market, whether they are desktop applications or mobile apps/mini-programs. These products often consider diverse user needs, developing various features, including some social attributes, and even inevitably containing advertisements.
-
-My personal product requirements are: basic, clean and simple, no need for extra features, and visually satisfactory.
-
-So I decided to try writing my own Todo List application, which can not only meet my different daily ideas and needs, but also allow me to decide the visual style, no matter how quirky, as long as I like it.
-
-In the design, I referenced the Noted design specification from the Figma community by aakarshna, and made adjustments based on my own design. On the front-end, I used Vue 2.x and Sass, and tried to use base64 to reduce the number of files.
-
-
-## Usage
-
-To keep things as simple as possible, I used a CDN to import Vue, so there's no need to install anything - just download and open the html file to use it.
-
-If you host it yourself, you can also customize the personal information displayed on the page. To avoid interference with the experience, I've commented this out by default. If you need it, just uncomment and modify the information to your own.
-
-The personal information section is as follows:
-
-```html
-<!-- Custom Info -->
-    <div class="nav">
-        <!-- Github Address -->
-        <!-- <div class="github">
-            <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link">
-                <img src="public/img/social/github.svg" class="ic-social" alt="">
-            </a>
-        </div> -->
-        <!-- <div class="about">
-                ...Customized personal information, hidden by default to avoid affecting the experience
-                ...If you want to display it, you can uncomment the code
-        </div> -->
-
-        <!-- Switch between Chinese and English pages -->
-        <div class="language switch-language">
-            <a href="javascript:void(0)" class="en active">En</a>
-            <span>/</span>
-            <a href="index-zh.html" target="_self" class="zh">中</a>
-        </div>
-    </div>
-```
-#### Usage Tips 💡
-- ✔️ Press Enter to submit all actions
-- ✔️ Drag to reorder your to-dos (PC only)
-- ✔️ Double-click to edit slogan and tasks
-- ✔️ Access quick actions in the right sidebar
-- 🔒 Your data is stored locally in your browser
-- 📝 Supports data download and import (appends to current list)
-
-## Authors
-- Rico's Blog <a href="https://blog.ricocc.com/" target="_blank">@Ricocc</a>
-- 小红书：  <a href="https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f" target="_blank">@Rico的设计漫想</a>
-- X - <a href="https://x.com/ricouii" target="_blank">@Ricouii</a>
-
-## Recommend
-- <a href="https://github.com/ricocc/public-portfolio-site/" target="_blank">⭐Star Github- Ricocc's Blog </a>
-- <a href="https://webinspo.uiineed.com/" target="_blank">💻 Web Design Inspiration</a>
-- <a href="https://og.uiineed.com/" target="_blank">🖼 Free OG Image Generator</a>
-- <a href="https://www.aiwnt.com/" target="_blank">🛠️ AI Web Novel Translator</a>
-- <a href="https://gradientshub.com/" target="_blank">🎨Free Gradients Toolkits</a>
-
-
+本项目基于MIT许可证开源。
 
 ---
 
-
-
-### 💜支持作者
-
-如果觉得有所帮助的话，一点点支持就可以大大激励创作者的热情，感谢！
-
-<img src="public/img/ricocc/zanshangma.jpg" alt="ricocc-wechat" width="280" height="auto" style="display:inline-block;margin:12px;">
-
-
-
-
-
-## License
-
-This project is licensed under the MIT license. See the [LICENSE](./LICENSE) file for more info.
+© 2023 UINeed. 保留所有权利。
