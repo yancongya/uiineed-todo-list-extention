@@ -545,7 +545,7 @@
                             <!-- 微信联系信息 -->
                             <div class="zanshan" style="text-align: center; margin-top: 5px;">
                                 <p style="margin-bottom: 5px;">有问题可以添加微信☕</p>
-                                <img src="public/img/wechat_qrcode.jpg" alt="" class="zanshan-qr" style="width: 150px; height: auto;">
+                                <img src="public/img/wechat_qrcode.jpg" alt="" class="zanshan-qr" style="width: 150px; height: auto; cursor: pointer;" title="点击复制微信号" @click="copyWechat">
                             </div>
                         </div>
                     </div>
@@ -704,6 +704,24 @@
                         document.execCommand('copy');
                         document.body.removeChild(textarea);
                         alert("邮箱地址已复制: " + email);
+                    });
+                },
+                copyWechat: function() {
+                    const wechatId = "Tycon3";
+                    navigator.clipboard.writeText(wechatId).then(() => {
+                        alert("微信号已复制: " + wechatId);
+                    }).catch(err => {
+                        console.error('无法复制文本: ', err);
+                        // 后备方案
+                        const textarea = document.createElement('textarea');
+                        textarea.value = wechatId;
+                        textarea.style.position = 'fixed';
+                        textarea.style.opacity = 0;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textarea);
+                        alert("微信号已复制: " + wechatId);
                     });
                 },
                 shuffle: function () {
