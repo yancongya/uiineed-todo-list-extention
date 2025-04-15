@@ -15,7 +15,7 @@
     <script src="lib/CSInterface.js"></script>
     <script src="lib/jquery-1.9.1.js"></script>
     
-    <script>
+        <script>
         // 固定语言为中文
         localStorage.setItem('uiineed-todos-lang', 'zh');
         
@@ -26,7 +26,43 @@
         } catch(e) {
             console.log("未在CEP环境中运行，CSInterface初始化失败:", e);
         }
-    </script>
+
+        // 添加点击事件和悬浮提示
+        document.addEventListener('DOMContentLoaded', function() {
+            var todoLogo = document.querySelector('.title img.title-1');
+            var addContentWrapper = document.querySelector('.add-content-wrapper');
+            
+            if (todoLogo && addContentWrapper) {
+                todoLogo.style.cursor = 'pointer';
+                
+                // 创建悬浮提示元素
+                var tooltip = document.createElement('div');
+                tooltip.className = 'title-tooltip';
+                tooltip.textContent = "点击添加待办事项";
+                todoLogo.parentNode.appendChild(tooltip);
+                
+                todoLogo.addEventListener('mouseover', function() {
+                    tooltip.style.opacity = '1';
+                    tooltip.style.visibility = 'visible';
+                });
+                
+                todoLogo.addEventListener('mouseout', function() {
+                    tooltip.style.opacity = '0';
+                    tooltip.style.visibility = 'hidden';
+                });
+                
+                todoLogo.addEventListener('click', function() {
+                    addContentWrapper.classList.add('show-input');
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!addContentWrapper.contains(e.target) && !todoLogo.contains(e.target)) {
+                        addContentWrapper.classList.remove('show-input');
+                    }
+                });
+            }
+        });
+        </script>
     <style>
         /* 自定义弹窗样式 */
         .custom-alert-overlay {
@@ -121,6 +157,85 @@
                 transform: scale(0.8);
                 opacity: 0;
             }
+        }
+        
+        /* 自定义待办事项输入区域悬浮交互 */
+        .container.header {
+            position: relative;
+            height: 60px;
+            overflow: visible;
+        }
+        
+        .title {
+            position: relative;
+        }
+        
+        .title-tooltip {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #FFFFFF;
+            color: #33322E;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 200;
+            box-shadow: 2px 2px 0px #33322E;
+            border: 1.5px solid #33322E;
+        }
+        
+        .title-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 6px 8px 6px;
+            border-style: solid;
+            border-color: transparent transparent #33322E transparent;
+        }
+        
+        .title-tooltip::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 5px 6px 5px;
+            border-style: solid;
+            border-color: transparent transparent #FFFFFF transparent;
+        }
+        
+        .add-content-wrapper {
+            position: fixed;
+            left: 50%;
+            top: -100vh;
+            transform: translateX(-50%);
+            transition: all 0.3s ease;
+            opacity: 0;
+            z-index: 100;
+            width: 80%;
+            max-width: 700px;
+            pointer-events: none;
+        }
+        
+        .add-content-wrapper.show-input {
+            top: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .bar-bottom {
+            position: relative;
+            cursor: pointer;
         }
     </style>
         <script>
@@ -370,16 +485,16 @@
                                 <li>
                              <input  value="导入(txt/json)" type="button" class="btn-small action-import" id="import" />
                                 <!-- <input type="file" id="import-file" accept=".txt,.json" style="display:none"> -->
-                          </li>
-                        </ul>
-                        
+                                </li>
+                            </ul>
+
                         <!-- 新增AE功能区 -->
                         <ul class="todo-func-list ae-functions" v-if="typeof csInterface !== 'undefined' && csInterface">
                             <li>
                                 <input type="button" value="创建AE图层" class="btn-small action-create-layers" @click="createTodoLayers" />
                             </li>
                         </ul>
-                    </div>
+                        </div>
 
                     </div>
                 </div>
@@ -453,8 +568,8 @@
                         console.error("保存到AE失败:", e);
                     }
                 }
+                }
             }
-        }
         </script>
         <script>
         // 移除语言切换相关内容
@@ -552,15 +667,18 @@
                         this.newTodoTitle = '';
                         this.checkEmpty = false;
                         this.delayTime = '0';
+                        
+                    // 关闭输入框
+                    document.querySelector('.add-content-wrapper').classList.remove('show-input');
 
                     // 移除自动创建AE图层的功能
                     // 仅保存到本地存储，不自动创建AE图层
-                },
+                    },
                 markAsCompleted: function (todo) {
                         todo.completed = true;
                     // 移除自动更新AE图层的功能
                     // 仅更新本地数据
-                },
+                    },
                 markAsUncompleted: function (todo) {
                         todo.completed = false;
                     // 移除自动更新AE图层的功能
@@ -860,9 +978,9 @@
             element.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText);
             element.download = fileName;
             
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
         };
 
         // 导入文件
@@ -981,7 +1099,7 @@
                 app.todos = data;
             }
         </script>
-        
+
 
     </body>
 </html>
