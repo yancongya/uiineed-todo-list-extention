@@ -501,16 +501,56 @@
 
              <!-- 自定义个人的信息 -->
             <div class="nav" draggable="false">
-                    <div class="github">
-                        <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link" draggable="false">
-                            <img src="public/img/social/github.svg" class="ic-social" alt="" draggable="false">
-                        </a>
-                    </div>
-                <!-- 移除语言切换 -->
-                <div class="ae-version">
-                    <span class="version-text">AE版</span>
+                <div class="about">
+                    <div class="info">
+                        <div class="info-ico" @click="togglePop" :style="{ fontWeight: popShow ? 'normal' : 'bold' }">
+                            关于我
+                        </div>
+                        <div class="popup animated popIn" v-if="!popShow" style="padding: 15px; box-sizing: border-box;">
+                            <!-- 作者信息区域 -->
+                            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                <img src="public/img/author.gif" alt="" style="width: 80px; height: auto;">
+                                <span style="font-size: 18px; margin-left: 15px;">烟囱鸭</span>
                             </div>
-                                </div>
+                            
+                            <!-- 描述文字 -->
+                            <div style="margin-bottom: 12px; color: #666; font-size: 14px; line-height: 1.4;">
+                                简简单单喜欢探索设计和开发的设计师.
+                            </div>
+                            
+                            <!-- 社交媒体图标 -->
+                            <div style="display: flex; margin-bottom: 12px; justify-content: space-between;">
+                                <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link">
+                                    <img src="public/img/social/github.svg" class="ic-social" alt="">
+                                </a>
+                                <a href="https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f?ref=opensource-todo" target="_blank" class="social-link">
+                                    <img src="public/img/social/xiaohongshu.svg" class="ic-social" alt="">
+                                </a>
+                                <a href="https://space.bilibili.com/11442751?ref=opensource-todo" target="_blank" class="social-link">
+                                    <img src="public/img/social/bilibili.svg" class="ic-social" alt="">
+                                </a>
+                                <a href="https://ricocc.zcool.com.cn/?ref=opensource-todo" target="_blank" class="social-link">
+                                    <img src="public/img/social/zcool.svg" class="ic-social" alt="">
+                                </a>
+                                <a href="javascript:void(0);" class="social-link" @click="copyEmail">
+                                    <img src="public/img/social/mail.svg" class="ic-social" alt="" title="点击复制邮箱">
+                                </a>
+                            </div>
+                            
+                            <!-- 博客链接 -->
+                            <a href="https://blog.ricocc.com/?ref=todo" target="_blank" class="inspiration" style="display: block; margin-bottom: 12px; text-decoration: none; color: #ff5858;">
+                                🔖开源的设计博客↗
+                            </a>
+                            
+                            <!-- 微信联系信息 -->
+                            <div class="zanshan" style="text-align: center; margin-top: 5px;">
+                                <p style="margin-bottom: 5px;">有问题可以添加微信☕</p>
+                                <img src="public/img/wechat_qrcode.jpg" alt="" class="zanshan-qr" style="width: 150px; height: auto;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
                                 </div>
                             </div>
@@ -647,6 +687,24 @@
                         return this.shortCut = '开✨'
                     }
 
+                },
+                copyEmail: function() {
+                    const email = "2655283737@qq.com";
+                    navigator.clipboard.writeText(email).then(() => {
+                        alert("邮箱地址已复制: " + email);
+                    }).catch(err => {
+                        console.error('无法复制文本: ', err);
+                        // 后备方案
+                        const textarea = document.createElement('textarea');
+                        textarea.value = email;
+                        textarea.style.position = 'fixed';
+                        textarea.style.opacity = 0;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textarea);
+                        alert("邮箱地址已复制: " + email);
+                    });
                 },
                 shuffle: function () {
                         this.filteredTodos = _.shuffle(this.filteredTodos);
