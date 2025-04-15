@@ -11,6 +11,126 @@
         <link href="public/css/normalize.css" rel="stylesheet" media="screen">
         <link href="public/css/style.min.css" rel="stylesheet" media="screen">
     
+    <!-- 自定义动画样式 -->
+    <style>
+        /* 优化进场动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 30px, 0);
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+                max-height: 150px;
+            }
+        }
+        
+        /* 改进的项目动画效果 */
+        .todo-item {
+            will-change: opacity, transform, max-height;
+            backface-visibility: hidden;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center top;
+            padding: 0;
+            margin-bottom: 12px !important;
+        }
+        
+        /* 减少内容区域的内边距 */
+        .todo-content {
+            padding: 10px 56px !important;
+            min-height: 45px !important;
+        }
+        
+        /* 调整按钮位置 */
+        .btn-finish, .btn-unfinish {
+            top: 8px !important;
+        }
+        
+        .btn-delete, .btn-restore, .btn-edit-submit {
+            top: 8px !important;
+        }
+        
+        .todo-item:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+        
+        .drag-move {
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+        
+        .todo-list li {
+            backface-visibility: hidden;
+            will-change: opacity, transform, max-height;
+            transform-origin: center top;
+        }
+        
+        /* 提高透明度变化的对比度 */
+        .drag-enter-active {
+            opacity: 0 !important;
+        }
+        
+        /* 整体列表布局调整 */
+        .todo-list {
+            padding: 20px 36px 25px !important;
+        }
+        
+        /* 减少底部信息栏的高度 */
+        .bar-message {
+            height: 38px !important;
+            line-height: 38px !important;
+        }
+        
+        /* 优化弹出动画效果 */
+        .popIn {
+            animation-name: popIn;
+            animation-duration: 0.5s;
+            animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* 添加交互动效 */
+        .todo-btn {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+        
+        .todo-btn:hover {
+            transform: translate(-2px, -2px) scale(1.05) !important;
+        }
+        
+        .add-content-wrapper.show-input {
+            animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes bounceIn {
+            0% { 
+                opacity: 0;
+                transform: translate(-50%, -40%) scale(0.8);
+            }
+            60% { 
+                transform: translate(-50%, -52%) scale(1.05);
+            }
+            100% { 
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        /* 调整输入框高度 */
+        .add-content {
+            height: 52px !important;
+            line-height: 52px !important;
+        }
+        
+        .submit-btn {
+            height: 48px !important;
+            line-height: 48px !important;
+        }
+    </style>
+    
     <!-- CEP Extension Libraries -->
     <script src="lib/CSInterface.js"></script>
     <script src="lib/jquery-1.9.1.js"></script>
@@ -53,13 +173,38 @@
                 
                 todoLogo.addEventListener('click', function() {
                     addContentWrapper.classList.add('show-input');
+                    // 让输入框获得焦点
+                    setTimeout(function() {
+                        var inputElement = addContentWrapper.querySelector('.add-content');
+                        if (inputElement) {
+                            inputElement.focus();
+                        }
+                    }, 300);
                 });
                 
                 document.addEventListener('click', function(e) {
-                    if (!addContentWrapper.contains(e.target) && !todoLogo.contains(e.target)) {
-                        addContentWrapper.classList.remove('show-input');
+                    if (!addContentWrapper.contains(e.target) && !todoLogo.contains(e.target) && addContentWrapper.classList.contains('show-input')) {
+                        closeInputWithAnimation();
                     }
                 });
+                
+                // 添加ESC键关闭输入框
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && addContentWrapper.classList.contains('show-input')) {
+                        closeInputWithAnimation();
+                    }
+                });
+                
+                // 添加动画关闭功能
+                function closeInputWithAnimation() {
+                    addContentWrapper.classList.add('hiding');
+                    setTimeout(function() {
+                        addContentWrapper.classList.remove('show-input');
+                        setTimeout(function() {
+                            addContentWrapper.classList.remove('hiding');
+                        }, 300);
+                    }, 50);
+                }
             }
         });
         </script>
@@ -218,7 +363,7 @@
             left: 50%;
             top: -100vh;
             transform: translateX(-50%);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0;
             z-index: 100;
             width: 80%;
@@ -231,6 +376,42 @@
             transform: translate(-50%, -50%);
             opacity: 1;
             pointer-events: auto;
+        }
+        
+        .add-content-wrapper.hiding {
+            top: 70%;
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+        
+        @keyframes slideFadeIn {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideFadeOut {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+        }
+        
+        .add-content {
+            animation: slideFadeIn 0.3s ease-out forwards;
+        }
+        
+        .add-content-wrapper.hiding .add-content {
+            animation: slideFadeOut 0.3s ease-in forwards;
         }
         
         .bar-bottom {
@@ -381,15 +562,16 @@
                         <ul v-if="!todos.length && showEmptyTips" class="empty-tips">
                         <li> 添加你的第一个待办事项！📝</li>
                         <li>食用方法💡：</li>
+                        <li>✔️ 点击标题添加任务</li>
                         <li>✔️ 所有提交操作支持Enter回车键提交</li>
-                        <li>✔️ 拖拽Todo上下移动可排序(仅支持PC)</li>
+                        <li>✔️ 拖拽Todo上下移动可排序</li>
                         <li>✔️ 双击上面的标语和 Todo 可进行编辑</li>
                         <li>✔️ 右侧的小窗口是快捷操作哦</li>
-                        <li>🔒 所有的Todo数据存储在浏览器本地</li>
-                        <li>📝 支持下载和导入，导入追加到当前序列</li>
+                        <li>🔒 所有的Todo数据存储在本地</li>
+                        <li>📝 支持下载、导出和导入，导入追加到当前序列</li>
                         </ul>
 
-                    <transition-group name="drag" class="todo-list" tag="ul" mode="in-out" @before-enter="beforeEnter"
+                    <transition-group name="drag" class="todo-list" tag="ul" mode="out-in" @before-enter="beforeEnter"
                     @enter="enter" @after-enter="afterEnter"
                             :css="false"
                     appear>
@@ -397,7 +579,7 @@
                         <li v-for='(todo, index) in filteredTodos' :key='todo.id' class='todo-item'
                             @dragenter="dragenter($event, index)" @dragover="dragover($event, index)"
                                 @dragstart="dragstart(index)"
-                                :data-delay="index * 150 * delayTime"
+                                :data-delay="index * 80 * delayTime"
                                 v-show="show"
                                 :draggable="!(editedTodo !== null && editedTodo.id === todo.id)">
                             <div class="todo-content" :class='{completed:todo.completed}' @dblclick="editdTodo(todo)">
@@ -515,22 +697,22 @@
                             
                             <!-- 描述文字 -->
                             <div style="margin-bottom: 12px; color: #666; font-size: 14px; line-height: 1.4;">
-                                简简单单喜欢探索设计和开发的设计师.
+                                简简单单喜欢探索设计和开发的动效设计师.
                             </div>
                             
                             <!-- 社交媒体图标 -->
                             <div style="display: flex; margin-bottom: 12px; justify-content: space-between;">
-                                <a href="https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo" target="_blank" class="social-link">
-                                    <img src="public/img/social/github.svg" class="ic-social" alt="">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo')">
+                                    <img src="public/img/social/github.svg" class="ic-social" alt="" title="GitHub">
                                 </a>
-                                <a href="https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f?ref=opensource-todo" target="_blank" class="social-link">
-                                    <img src="public/img/social/xiaohongshu.svg" class="ic-social" alt="">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f?ref=opensource-todo')">
+                                    <img src="public/img/social/xiaohongshu.svg" class="ic-social" alt="" title="小红书">
                                 </a>
-                                <a href="https://space.bilibili.com/11442751?ref=opensource-todo" target="_blank" class="social-link">
-                                    <img src="public/img/social/bilibili.svg" class="ic-social" alt="">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://space.bilibili.com/11442751?ref=opensource-todo')">
+                                    <img src="public/img/social/bilibili.svg" class="ic-social" alt="" title="哔哩哔哩">
                                 </a>
-                                <a href="https://ricocc.zcool.com.cn/?ref=opensource-todo" target="_blank" class="social-link">
-                                    <img src="public/img/social/zcool.svg" class="ic-social" alt="">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://ricocc.zcool.com.cn/?ref=opensource-todo')">
+                                    <img src="public/img/social/zcool.svg" class="ic-social" alt="" title="站酷">
                                 </a>
                                 <a href="javascript:void(0);" class="social-link" @click="copyEmail">
                                     <img src="public/img/social/mail.svg" class="ic-social" alt="" title="点击复制邮箱">
@@ -538,8 +720,8 @@
                             </div>
                             
                             <!-- 博客链接 -->
-                            <a href="https://blog.ricocc.com/?ref=todo" target="_blank" class="inspiration" style="display: block; margin-bottom: 12px; text-decoration: none; color: #ff5858;">
-                                🔖开源的设计博客↗
+                            <a href="javascript:void(0);" class="inspiration" style="display: block; margin-bottom: 12px; text-decoration: none; color: #ff5858;" @click="openExternalLink('https://github.com/ricocc/uiineed-todo-list')">
+                                🔖原作者项目↗
                             </a>
                             
                             <!-- 微信联系信息 -->
@@ -564,6 +746,66 @@
             csInterface.evalScript('$.evalFile(Folder.decode(Folder.appPackage.fullName) + "/jsx/index.jsx")');
         } catch(e) {
             console.log("CSInterface不可用: ", e);
+        }
+        
+        // 全局助手函数 - 确保在AE环境中打开链接
+        function openURLInAE(url) {
+            if (typeof csInterface !== 'undefined' && csInterface) {
+                try {
+                    // 使用系统命令打开URL
+                    var script = '';
+                    if (navigator.platform.indexOf('Win') !== -1) {
+                        // Windows平台
+                        script = 'var cmd = "explorer \\"' + url + '\\"";' +
+                                'try { ' +
+                                '    var shell = new ActiveXObject("Shell.Application");' +
+                                '    shell.ShellExecute("cmd.exe", "/c " + cmd, null, "open", 0);' +
+                                '    true;' +
+                                '} catch(e) {' +
+                                '    system.callSystem("cmd.exe /c start " + cmd);' +
+                                '    true;' +
+                                '}';
+                    } else {
+                        // macOS平台
+                        script = 'system.callSystem("open \\"' + url + '\\"");' +
+                                'true;';
+                    }
+                    
+                    csInterface.evalScript(script, function(result) {
+                        console.log("打开URL结果:", result);
+                        if (result !== "true" && result !== true) {
+                            // 尝试其他方法
+                            fallbackOpenURL(url);
+                        }
+                    });
+                } catch(e) {
+                    console.error("直接系统调用失败:", e);
+                    fallbackOpenURL(url);
+                }
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+        
+        // 辅助函数 - 尝试其他方法打开URL
+        function fallbackOpenURL(url) {
+            try {
+                // 方法1: 使用CEP的openURLInDefaultBrowser
+                csInterface.openURLInDefaultBrowser(url);
+            } catch(e1) {
+                try {
+                    // 方法2: 使用CEP的桌面HTML方法
+                    window.cep.util.openURLInDefaultBrowser(url);
+                } catch(e2) {
+                    try {
+                        // 方法3: 使用system.openURL
+                        csInterface.evalScript('system.openURL("' + url + '");');
+                    } catch(e3) {
+                        // 最后尝试普通的window.open
+                        window.open(url, '_blank');
+                    }
+                }
+            }
         }
         
         // localStorage 存储数据
@@ -724,9 +966,13 @@
                         alert("微信号已复制: " + wechatId);
                     });
                 },
+                openExternalLink: function(url) {
+                    // 使用全局助手函数打开URL
+                    openURLInAE(url);
+                },
                 shuffle: function () {
-                        this.filteredTodos = _.shuffle(this.filteredTodos);
-                    },
+                    this.filteredTodos = _.shuffle(this.filteredTodos);
+                },
                 addTodo: function (e) {
                         if (this.newTodoTitle === '') {
                             this.checkEmpty = true;
@@ -744,8 +990,17 @@
                         this.checkEmpty = false;
                         this.delayTime = '0';
                         
-                    // 关闭输入框
-                    document.querySelector('.add-content-wrapper').classList.remove('show-input');
+                    // 关闭输入框 - 添加动画效果
+                    var addContentWrapper = document.querySelector('.add-content-wrapper');
+                    if (addContentWrapper) {
+                        addContentWrapper.classList.add('hiding');
+                        setTimeout(function() {
+                            addContentWrapper.classList.remove('show-input');
+                            setTimeout(function() {
+                                addContentWrapper.classList.remove('hiding');
+                            }, 300);
+                        }, 200);
+                    }
 
                     // 移除自动创建AE图层的功能
                     // 仅保存到本地存储，不自动创建AE图层
@@ -861,23 +1116,46 @@
                 // JS钩子 加载动画
                     beforeEnter(dom) {
                         dom.classList.add('drag-enter-active');
+                        // 初始状态：完全透明，向上偏移，并且高度减少
+                        dom.style.opacity = '0';
+                        dom.style.transform = 'translateY(-15px)';
+                        dom.style.maxHeight = '0';
+                        dom.style.overflow = 'hidden';
                     },
                     enter(dom, done) {
                         let delay = dom.dataset.delay;
+                        // 强制浏览器重绘以确保过渡效果正常显示
+                        dom.offsetHeight;
+                        
                         setTimeout(() => {
                             this.delayTime = '1';
-                            dom.classList.remove('drag-enter-active');
-                            dom.classList.add('drag-enter-to');
-                        let transitionend = window.ontransitionend ? "transitionend" :"webkitTransitionEnd";
+                            // 添加过渡属性，包括高度变化
+                            dom.style.transition = `opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                                              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                                              max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)`;
+                            // 设置最终状态：完全不透明，位置归零，高度恢复
+                            dom.style.opacity = '1';
+                            dom.style.transform = 'translateY(0)';
+                            dom.style.maxHeight = '150px'; // 减少高度
+                            
+                            let transitionend = window.ontransitionend ? "transitionend" :"webkitTransitionEnd";
                             dom.addEventListener(transitionend, function onEnd() {
                                 dom.removeEventListener(transitionend, onEnd);
+                                // 清除样式以避免干扰后续操作
+                                dom.style.transition = '';
+                                dom.style.maxHeight = '';
+                                dom.style.overflow = '';
                                 done();
-                            //调用done() 告诉vue动画已完成，以触发 afterEnter 钩子
-                            })
+                            });
                         }, delay);
                     },
                     afterEnter(dom) {
-                        dom.classList.remove('drag-enter-to');
+                        // 确保所有过渡样式被清除
+                        dom.classList.remove('drag-enter-active');
+                        dom.style.opacity = '';
+                        dom.style.transform = '';
+                        dom.style.maxHeight = '';
+                        dom.style.overflow = '';
                     },
                 saveLanguage: function(lang) {
                     // 始终设置为中文
