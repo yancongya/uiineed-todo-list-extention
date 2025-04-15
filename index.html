@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Todo List Online - Minimalist, No-Login Required Web Todo App</title>
+        <title>UINeed Todo AE - Todo List for After Effects</title>
         <meta
             name="keywords"
             content="online todo list, minimalist todo app, no login todo, web todo list, todo manager, task scheduler, memo app, browser-based todo, instant access, secure storage, personal todo, professional todo, work and life assistant">
@@ -14,13 +14,16 @@
         <link type="favicon" rel="shortcut icon" href="public/img/favicon.png"/>
         <link href="public/css/normalize.css" rel="stylesheet" media="screen">
         <link href="public/css/style.min.css" rel="stylesheet" media="screen">
+        
+        <!-- CEP Extension Libraries -->
+        <script src="./lib/CSInterface.js"></script>
+        <script src="./lib/jquery-1.9.1.js"></script>
+        
         <script>
             // Automatically detect and switch language
             const browserLanguage = navigator.language || navigator.userLanguage;
             const languageCode = browserLanguage.split('-')[0].toLowerCase();
             if (!localStorage.getItem('uiineed-todos-lang')) localStorage.setItem('uiineed-todos-lang', languageCode);
-            const userLanguage = localStorage.getItem('uiineed-todos-lang');
-            if (userLanguage && userLanguage === "zh") window.location.href = (window.location.pathname === "/") ? 'index-zh.html' : window.location.href.replace('index.html', 'index-zh.html');
         </script>
         <!-- Vue 2.x Todo List -->
         <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script> -->
@@ -360,7 +363,7 @@
 
                 <!-- witch Chinese Or English as homepage as required -->
                     <div class="language switch-language">
-                        <a href="javascript:void(0)" class="en active" draggable="false">En</a>
+                        <a href="javascript:;" class="en active" draggable="false">En</a>
                         <span>/</span>
                         <a href="index-zh.html" target="_self" class="zh" draggable="false" @click="saveLanguage('zh')">中</a>
                     </div>
@@ -369,24 +372,44 @@
             </div>
         </div>
         <script>
-            // localStorage operations
+            // CEP Extension Initialization
+            var csInterface = null;
+            try {
+                csInterface = new CSInterface();
+            } catch(e) {
+                console.log("CSInterface not available: ", e);
+            }
+            
+            // localStorage storage
             var STORAGE_KEY = 'uiineed-todos';
             var todoStorage = {
-                fetch: function() {
+                fetch: function () {
                     var todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                    todos.forEach(function(todo, index) {
+                    todos.forEach(function (todo, index) {
                         todo.id = index;
                     });
                     todoStorage.uid = todos.length;
-                    return todos;
+                    return todos
                 },
-                save: function(todos) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+                save: function (todos) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
                 }
             }
         </script>
         <script>
-            // Vue instance initialization
+            // 修改语言切换逻辑
+            document.addEventListener('DOMContentLoaded', function() {
+                var langLink = document.querySelector('.switch-language .zh');
+                if (langLink) {
+                    langLink.addEventListener('click', function(e) {
+                        e.preventDefault(); // 阻止默认行为
+                        localStorage.setItem('uiineed-todos-lang', 'zh');
+                        window.location.href = 'index-zh.html';
+                    });
+                }
+            });
+        </script>
+        <script>
             var app = new Vue({
                 el: '#todo-app',
                 data: function() {
@@ -482,14 +505,11 @@
                         todo.completed = false;
                     },
                     markAllAsCompleted: function() {
-                        if (!confirm('Confirm to mark all as completed?')) {
-                            return;
-                        }
                         this.todos.map(function(todo) {
                             if (!todo.completed) {
-                                todo.completed = true;
+                                todo.completed = true
                             }
-                        });
+                        })
                     },
 
                     removeTodo: function(todo) {
@@ -539,20 +559,14 @@
                         this.editedTodo = null;
                     },
                     clearCompleted: function() {
-                        if (!confirm('Confirm to clear all completed items?')) {
-                            return;
-                        }
                         this.completedTodos.map(todo => todo.removed = true);
                         this.recycleBin.unshift(...this.completedTodos);
                         this.todos = this.leftTodos;
                     },
                     clearAll: function() {
-                        if (!confirm('Confirm to clear all todo items?')) {
-                            return;
-                        }
                         this.todos.map(todo => todo.removed = true);
                         this.recycleBin.unshift(...this.todos);
-                        this.todos = [];
+                        this.todos = []
                     },
 
                     // Drag Operations
@@ -596,8 +610,15 @@
                     afterEnter(dom) {
                         dom.classList.remove('drag-enter-to');
                     },
-                    saveLanguage(lang) {
+                    saveLanguage: function(lang) {
                         localStorage.setItem('uiineed-todos-lang', lang);
+                    },
+                    // New method to create todo items in After Effects
+                    createTodoLayersInAE: function() {
+                        var todosStr = encodeURIComponent(JSON.stringify(this.todos));
+                        csInterface.evalScript('$.todo.createTodoLayers("' + todosStr + '")', function(result) {
+                            alert(result); // Show the result message
+                        });
                     }
                 },
 
@@ -663,36 +684,27 @@
                 })
         </script>
         <script>
-            // Fetch data from localStorage
+            // Fetch todos from localStorage
             var fetchedTodos = todoStorage.fetch();
-
-            function handleClickDownload() {
-                // Get data
+            
+            function handleClickDownload(){
                 var fetchedTodos = todoStorage.fetch();
-                // Convert data to text string
                 var todosText = JSON.stringify(fetchedTodos, null, 2);
-                // Get current date and format as "todos-YYYYMMDD.txt"
                 var currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
                 var fileName = `todos-${currentDate}.txt`;
 
-                // Create hidden downloadable link
                 var element = document.createElement('a');
-                element.setAttribute(
-                    'href',
-                    'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText)
-                );
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText));
                 element.setAttribute('download', fileName);
 
-                // Trigger click
                 document.body.appendChild(element);
                 element.click();
-                alert("Successfully exported data to " + fileName);
-                // Cleanup
+                // Remove alert dialog
                 document.body.removeChild(element);
-            }
+            };
 
             // Import file
-            let tempFileInput = null; // Store dynamically created file input element
+            let tempFileInput = null;
             document.getElementById('import').addEventListener('click', function() {
                 if (!tempFileInput) {
                     tempFileInput = document.createElement('input');
@@ -704,7 +716,7 @@
                     tempFileInput.addEventListener('change', function(event) {
                         var file = event.target.files[0];
                         if (!file) {
-                            alert('No file selected!');
+                            // Remove alert dialog
                             return;
                         }
                         var reader = new FileReader();
@@ -713,47 +725,73 @@
                             try {
                                 var importedData;
                                 if (file.type === 'application/json') {
-                                    // If JSON file, parse directly
                                     importedData = JSON.parse(content);
                                 } else if (file.type === 'text/plain') {
-                                    // If TXT file, try to parse as JSON
                                     importedData = JSON.parse(content.trim());
                                 } else {
                                     throw new Error('Unsupported file type');
                                 }
-                                // Get current data from localStorage
                                 var currentTodos = todoStorage.fetch() || [];
-                                // Get current data count for new unique ids
                                 var nextIdIndex = currentTodos.length;
-                                // Update ids for imported data
                                 importedData.forEach((item, index) => {
                                     item.id = nextIdIndex + index;
                                 });
-                                // Append imported data to existing data
                                 var updatedTodos = currentTodos.concat(importedData);
-                                // Update localStorage
                                 todoStorage.save(updatedTodos);
-                                // Update page content
                                 updatePageContent(updatedTodos);
+                                // Remove alert dialog
                             } catch (error) {
-                                alert('File parsing error, please ensure correct format: ' + error.message);
+                                // Remove alert dialog
+                                console.error('Parse error:', error);
                             }
                         };
                         reader.onerror = function(e) {
-                            alert('Error reading file: ' + e.target.error.name);
+                            // Remove alert dialog
+                            console.error('Read error:', e.target.error);
                         };
                         reader.readAsText(file);
                         this.parentNode.removeChild(tempFileInput);
                         tempFileInput = null;
                     });
-                }
+                };
                 tempFileInput.click();
             });
-
+            
             function updatePageContent(data) {
                 app.todos = data;
             }
-
+        </script>
+        
+        <!-- Add a button to create todo items in AE -->
+        <div class="ae-integration">
+            <button class="btn ae-btn" onclick="app.createTodoLayersInAE()">Create Todo Items in After Effects</button>
+        </div>
+        
+        <script>
+            // Add a simple custom style for the AE integration button
+            var style = document.createElement('style');
+            style.textContent = `
+            .ae-integration {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1000;
+            }
+            .ae-btn {
+                background-color: #9999FF;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .ae-btn:hover {
+                background-color: #7777FF;
+            }
+            `;
+            document.head.appendChild(style);
         </script>
     </body>
 

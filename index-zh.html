@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,8 +15,9 @@
         const browserLanguage = navigator.language || navigator.userLanguage;
         const languageCode = browserLanguage.split('-')[0].toLowerCase();
         if (!localStorage.getItem('uiineed-todos-lang')) localStorage.setItem('uiineed-todos-lang', languageCode);
-        const userLanguage = localStorage.getItem('uiineed-todos-lang');
-        if (userLanguage && userLanguage !== "zh") window.location.href = (window.location.pathname === "/") ? 'index.html' : window.location.href.replace('index-zh.html', 'index.html');
+        // 移除自动切换，防止页面空白问题
+        // const userLanguage = localStorage.getItem('uiineed-todos-lang');
+        // if (userLanguage && userLanguage !== "zh") window.location.href = (window.location.pathname === "/") ? 'index.html' : window.location.href.replace('index-zh.html', 'index.html');
     </script>
     <!-- Vue 2.x  Todo List   使用CDN就无需引入本地文件 -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script> -->
@@ -245,9 +244,9 @@
                 </div> -->
                 <!-- 根据需要切换中英文作为首页 -->
                 <div class="language switch-language">
-                    <a href="index.html" class="en" draggable="false" @click="saveLanguage('en')">En</a>
+                    <a href="index.html" target="_self" class="en" draggable="false" @click="saveLanguage('en')">En</a>
                     <span>/</span>
-                    <a href="javascript:;" target="_self" class="zh active" draggable="false">中</a>
+                    <a href="javascript:;" class="zh active" draggable="false">中</a>
                 </div>
             </div>
 
@@ -255,6 +254,14 @@
     </div>
 
     <script>
+        // CEP Extension Initialization
+        var csInterface = null;
+        try {
+            csInterface = new CSInterface();
+        } catch(e) {
+            console.log("CSInterface不可用: ", e);
+        }
+        
         // localStorage 存储数据
         var STORAGE_KEY = 'uiineed-todos';
         var todoStorage = {
@@ -270,6 +277,19 @@
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
             }
         }
+    </script>
+    <script>
+        // 修改语言切换逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            var langLink = document.querySelector('.switch-language .en');
+            if (langLink) {
+                langLink.addEventListener('click', function(e) {
+                    e.preventDefault(); // 阻止默认行为
+                    localStorage.setItem('uiineed-todos-lang', 'en');
+                    window.location.href = 'index.html';
+                });
+            }
+        });
     </script>
     <script>
         var app = new Vue({
@@ -489,7 +509,7 @@
                 afterEnter(dom) {
                     dom.classList.remove('drag-enter-to');
                 },
-                saveLanguage(lang) {
+                saveLanguage: function(lang) {
                     localStorage.setItem('uiineed-todos-lang', lang);
                 }
             },
@@ -575,7 +595,8 @@
             // 触发点击
             document.body.appendChild(element);
             element.click();
-            alert("导出数据 "+fileName+" 成功！");
+            // 不显示弹窗提示
+            // alert("导出数据 "+fileName+" 成功！");
             // 清理
             document.body.removeChild(element);
         };
@@ -597,7 +618,8 @@
                 tempFileInput.addEventListener('change', function(event) {
                     var file = event.target.files[0];
                     if (!file) {
-                        alert('没有选择文件！');
+                        // 注释掉alert，不显示弹窗
+                        // alert('没有选择文件！');
                         return;
                     }
                     var reader = new FileReader();
@@ -632,11 +654,15 @@
                             updatePageContent(updatedTodos);
                             // alert('文件导入成功，数据已追加！');
                         } catch (error) {
-                            alert('文件解析错误，请确保文件格式正确：' + error.message);
+                            // 注释掉alert，不显示弹窗
+                            // alert('文件解析错误，请确保文件格式正确：' + error.message);
+                            console.error('文件解析错误：', error);
                         }
                     };
                     reader.onerror = function(e) {
-                        alert('读取文件时发生错误：' + e.target.error.name);
+                        // 注释掉alert，不显示弹窗
+                        // alert('读取文件时发生错误：' + e.target.error.name);
+                        console.error('读取文件错误：', e.target.error);
                     };
                     reader.readAsText(file);
                     this.parentNode.removeChild(tempFileInput);
