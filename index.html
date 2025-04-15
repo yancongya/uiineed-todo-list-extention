@@ -155,22 +155,6 @@
             if (todoLogo && addContentWrapper) {
                 todoLogo.style.cursor = 'pointer';
                 
-                // 创建悬浮提示元素
-                var tooltip = document.createElement('div');
-                tooltip.className = 'title-tooltip';
-                tooltip.textContent = "点击添加待办事项";
-                todoLogo.parentNode.appendChild(tooltip);
-                
-                todoLogo.addEventListener('mouseover', function() {
-                    tooltip.style.opacity = '1';
-                    tooltip.style.visibility = 'visible';
-                });
-                
-                todoLogo.addEventListener('mouseout', function() {
-                    tooltip.style.opacity = '0';
-                    tooltip.style.visibility = 'hidden';
-                });
-                
                 todoLogo.addEventListener('click', function() {
                     addContentWrapper.classList.add('show-input');
                     // 让输入框获得焦点
@@ -313,49 +297,6 @@
         
         .title {
             position: relative;
-        }
-        
-        .title-tooltip {
-            position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #FFFFFF;
-            color: #33322E;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 200;
-            box-shadow: 2px 2px 0px #33322E;
-            border: 1.5px solid #33322E;
-        }
-        
-        .title-tooltip::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 6px 8px 6px;
-            border-style: solid;
-            border-color: transparent transparent #33322E transparent;
-        }
-        
-        .title-tooltip::after {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 5px 6px 5px;
-            border-style: solid;
-            border-color: transparent transparent #FFFFFF transparent;
         }
         
         .add-content-wrapper {
@@ -702,7 +643,7 @@
                             
                             <!-- 社交媒体图标 -->
                             <div style="display: flex; margin-bottom: 12px; justify-content: space-between;">
-                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://github.com/ricocc/uiineed-todo-list?ref=opensource-todo')">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://github.com/yancongya')">
                                     <img src="public/img/social/github.svg" class="ic-social" alt="" title="GitHub">
                                 </a>
                                 <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f?ref=opensource-todo')">
@@ -719,9 +660,9 @@
                                 </a>
                             </div>
                             
-                            <!-- 博客链接 -->
-                            <a href="javascript:void(0);" class="inspiration" style="display: block; margin-bottom: 12px; text-decoration: none; color: #ff5858;" @click="openExternalLink('https://github.com/ricocc/uiineed-todo-list')">
-                                🔖原作者项目↗
+                            <!-- 项目链接 -->
+                            <a href="javascript:void(0);" class="inspiration" style="display: block; margin-bottom: 12px; text-decoration: none; color: #ff5858;" @click="openExternalLink('https://github.com/yancongya/uiineed-todo-list-extention')">
+                                🔖开源项目↗
                             </a>
                             
                             <!-- 微信联系信息 -->
