@@ -11,18 +11,50 @@ $.todo = {
      * @returns {string} - JSON字符串形式的结果对象
      */
     saveTodos: function(todosStr) {
+        var path = "";
+        var filePath = "";
         try {
             var todos = JSON.parse(decodeURIComponent(todosStr));
-            var path = this.getStoragePath();
-            var file = new File(path + "todo.list");
+            path = this.getStoragePath();
+            if (path.indexOf("ERROR_IN_GETSTORAGEPATH") === 0) { // Check for error from getStoragePath
+                 return JSON.stringify({success: false, error: "getStoragePath 失败: " + path});
+            }
+
+            filePath = path + "todo.list";
+            var file = new File(filePath);
             
-            file.open("w");
-            file.write(JSON.stringify(todos, null, 2));
-            file.close();
+            var parentFolder = file.parent;
+            if (!parentFolder.exists) {
+                if (!parentFolder.create()) { // Try to create parent folder if it somehow wasn't
+                     return JSON.stringify({success: false, error: "无法创建父文件夹。路径: " + decodeURI(parentFolder.fsName) });
+                }
+            }
+
+            file.encoding = "UTF-8";
+            if (!file.open("w")) {
+                return JSON.stringify({success: false, error: "无法打开文件进行写入。路径: " + decodeURI(file.fsName) + ". 错误: " + file.error});
+            }
             
-            return JSON.stringify({success: true});
+            var writeSuccess = file.write(JSON.stringify(todos, null, 2));
+            if (!writeSuccess) {
+                 var writeError = file.error;
+                 file.close(); // Attempt to close even if write failed
+                 return JSON.stringify({success: false, error: "写入文件失败。路径: " + decodeURI(file.fsName) + ". 错误: " + writeError});
+            }
+            
+            var closeSuccess = file.close();
+            if (!closeSuccess) {
+                 return JSON.stringify({success: false, error: "关闭文件失败。路径: " + decodeURI(file.fsName) + ". 错误: " + file.error});
+            }
+
+            // Final check: Does the file actually exist on disk after all operations reported success?
+            if (!file.exists) {
+                return JSON.stringify({success: false, error: "文件写入操作均报告成功，但文件在关闭后实际不存在。路径: " + decodeURI(file.fsName)});
+            }
+            
+            return JSON.stringify({success: true, path: decodeURI(file.fsName)});
         } catch (e) {
-            return JSON.stringify({success: false, error: e.message});
+            return JSON.stringify({success: false, error: "保存时发生异常: " + e.toString() + ". 尝试的文件路径: " + (filePath ? decodeURI(filePath) : (path ? decodeURI(path) + "todo.list" : "未知")) });
         }
     },
     
@@ -31,24 +63,45 @@ $.todo = {
      * @returns {string} - JSON字符串形式的结果对象，包含待办事项数组或错误信息
      */
     loadTodos: function() {
+        var path = "";
+        var filePath = "";
         try {
-            var path = this.getStoragePath();
-            var file = new File(path + "todo.list");
+            path = this.getStoragePath();
+            if (path.indexOf("ERROR_IN_GETSTORAGEPATH") === 0) {
+                return JSON.stringify({success: false, error: "getStoragePath 失败: " + path, data:[]});
+            }
+
+            filePath = path + "todo.list";
+            var file = new File(filePath);
             
+            var parentFolder = file.parent;
+            if (!parentFolder.exists) {
+                return JSON.stringify({success: true, data: [], message: "父文件夹 " + decodeURI(parentFolder.fsName) + " 不存在，因此 todo.list 文件也不存在。" });
+            }
+
             if (!file.exists) {
-                return JSON.stringify({success: true, data: []});
+                return JSON.stringify({success: true, data: [], message: "文件不存在于路径: " + decodeURI(file.fsName)});
             }
             
-            file.open("r");
+            file.encoding = "UTF-8";
+            if (!file.open("r")) {
+                return JSON.stringify({success: false, error: "无法打开文件进行读取。路径: " + decodeURI(file.fsName) + ". 错误: " + file.error, data: []});
+            }
             var content = file.read();
+            var readError = file.error;
             file.close();
+
+            if (readError) {
+                 return JSON.stringify({success: false, error: "读取文件时出错。路径: " + decodeURI(file.fsName) + ". 错误: " + readError, data: []});
+            }
             
             return JSON.stringify({
                 success: true, 
-                data: JSON.parse(content)
+                data: JSON.parse(content),
+                path: decodeURI(file.fsName)
             });
         } catch (e) {
-            return JSON.stringify({success: false, error: e.message});
+            return JSON.stringify({success: false, error: "加载时发生异常: " + e.toString() + ". 尝试的文件路径: " + (filePath ? decodeURI(filePath) : (path ? decodeURI(path) + "todo.list" : "未知")), data: []});
         }
     },
     
@@ -57,10 +110,56 @@ $.todo = {
      * @returns {string} - 待办事项存储的文件夹路径
      */
     getStoragePath: function() {
-        // 使用扩展根目录而不是用户文档
-        var extensionPath = new File($.fileName).parent.parent.absoluteURI + "/";
-        // 返回解码后的路径，避免显示URL编码
-        return decodeURI(extensionPath);
+        try {
+            var userDocuments = Folder.myDocuments;
+            if (!userDocuments || !userDocuments.exists) {
+                return "ERROR_IN_GETSTORAGEPATH: Folder.myDocuments is not valid or does not exist.";
+            }
+
+            var appFolderName = "uiineed-todo-list";
+            var targetFolderPath = userDocuments.fsName + "/" + appFolderName; // Use / for Folder constructor
+            var targetFolder = new Folder(targetFolderPath);
+
+            if (!targetFolder.exists) {
+                if (!targetFolder.create()) {
+                    return "ERROR_IN_GETSTORAGEPATH: Failed to create folder '" + decodeURI(targetFolder.fsName) + "'. Error: " + targetFolder.error;
+                }
+            }
+            
+            var fsPath = targetFolder.fsName; // Get the system-specific path
+            // Ensure the path ends with a forward slash for consistent concatenation
+            if (fsPath.charAt(fsPath.length - 1) !== '/') {
+                fsPath += '/';
+            }
+            return fsPath; // e.g., "C:/Users/User/Documents/uiineed-todo-list/"
+        } catch (e) {
+            return "ERROR_IN_GETSTORAGEPATH: Exception during path retrieval: " + e.toString();
+        }
+    },
+    
+    openStorageFolder: function() {
+        try {
+            var storagePath = this.getStoragePath(); // This will end with a slash
+            if (storagePath.indexOf("ERROR_IN_GETSTORAGEPATH") === 0) {
+                return JSON.stringify({success: false, error: "获取存储路径失败: " + storagePath});
+            }
+            
+            // storagePath is a folder path, remove trailing slash if Folder constructor prefers no slash for existing check
+            var folderToCheckPath = storagePath;
+            if (folderToCheckPath.charAt(folderToCheckPath.length - 1) === '/') {
+                folderToCheckPath = folderToCheckPath.substring(0, folderToCheckPath.length - 1);
+            }
+            var folder = new Folder(folderToCheckPath);
+
+            if (folder.exists) {
+                folder.execute(); // Opens the folder
+                return JSON.stringify({success: true, path: decodeURI(folder.fsName)});
+            } else {
+                return JSON.stringify({success: false, error: "文件夹不存在: " + decodeURI(folder.fsName)});
+            }
+        } catch (e) {
+            return JSON.stringify({success: false, error: "打开文件夹时发生异常: " + e.toString()});
+        }
     },
     
     /**

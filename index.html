@@ -129,6 +129,20 @@
             height: 48px !important;
             line-height: 48px !important;
         }
+
+        /* 为.btn-small添加悬浮效果 */
+        .btn-small:hover {
+            /* background-color: #f0f0f0; /* 已移除：此行确保不覆盖原有的背景色hover效果 */
+            transform: translateY(-1px); /* 轻微上移 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 添加细微阴影 */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* 更新过渡效果，移除background-color */
+        }
+
+        /* 为特定的 #saveLocal 按钮添加背景色悬浮效果 */
+        #saveLocal:hover {
+            background-color: #e9e9e9; /* 一个示例的浅灰色背景 */
+            /* 它仍会继承 .btn-small:hover 的 transform 和 box-shadow */
+        }
     </style>
     
     <!-- CEP Extension Libraries -->
@@ -211,9 +225,9 @@
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            width: 360px;
+            width: 300px; /* 修改：宽度从360px减小到300px */
             max-width: 90%;
-            padding: 20px;
+            padding: 15px; /* 修改：内边距从20px减小到15px */
             animation: popIn 0.3s forwards;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
@@ -221,20 +235,22 @@
         .custom-alert-title {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 10px; /* 修改：下边距从12px减小到10px */
             color: #333;
+            text-align: center; /* 新增：文本居中 */
         }
         
         .custom-alert-content {
             font-size: 16px;
             line-height: 1.5;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* 修改：下边距从20px减小到15px */
             color: #555;
+            text-align: center; /* 新增：文本居中 */
         }
         
         .custom-alert-buttons {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center; /* 修改：从flex-end改为center，使按钮居中 */
             gap: 10px;
         }
         
@@ -606,6 +622,9 @@
                               <input type="button" value="导出数据"  class="btn-small  action-download" id="download" onclick="handleClickDownload()"></input>
                                 </li>
                                 <li>
+                                <input type="button" :value="saveLocalButtonComputedText" class="btn-small action-save-local" id="saveLocal" @click="handleSaveClick" @mouseenter="isMouseOverSaveButton = true" @mouseleave="isMouseOverSaveButton = false" />
+                                </li>
+                                <li>
                              <input  value="导入(txt/json)" type="button" class="btn-small action-import" id="import" />
                                 <!-- <input type="file" id="import-file" accept=".txt,.json" style="display:none"> -->
                                 </li>
@@ -818,7 +837,9 @@
                         windowWidth: document.documentElement.clientWidth,
                         slogan: this.getSlogan(),
                         isEditing: false,
-                        originalSlogan: ""
+                        originalSlogan: "",
+                        isAltPressed: false, // 新增：追踪Alt键状态
+                        isMouseOverSaveButton: false // 新增：追踪鼠标是否在"保存本地"按钮上
                 }
                 },
             // 监测 todos 列表的变化，将变化存储到 local storage
@@ -1144,6 +1165,65 @@
                         }
                     });
                 },
+                handleSaveClick: function(event) {
+                    if (event.altKey) {
+                        if (typeof csInterface !== 'undefined' && csInterface) {
+                            csInterface.evalScript('$.todo.openStorageFolder()', function(result) {
+                                console.log("[ExtendScript $.todo.openStorageFolder RAW RESULT]:", result);
+                                try {
+                                    var res = JSON.parse(result);
+                                    if (!res.success) {
+                                        alert("无法打开文件夹: " + (res.error || "未知错误"));
+                                    }
+                                } catch (e) {
+                                    console.error("[ExtendScript $.todo.openStorageFolder JSON PARSE ERROR]:", e, "\n[RAW RESULT]:", result);
+                                    alert("打开文件夹操作返回异常，或结果无法解析。请查看控制台。");
+                                }
+                            });
+                        } else {
+                            alert('未在CEP环境中运行，无法打开文件夹。');
+                        }
+                    } else {
+                        this.saveTodosToFile();
+                    }
+                },
+                saveTodosToFile: function() {
+                        if (typeof csInterface !== 'undefined' && csInterface) {
+                            try {
+                                var todosStr = JSON.stringify(this.todos);
+                                csInterface.evalScript('$.todo.saveTodos("' + encodeURIComponent(todosStr) + '")', function(result) {
+                                    console.log("[ExtendScript $.todo.saveTodos RAW RESULT]:", result);
+                                    try {
+                                        var response = JSON.parse(result);
+                                        if (response.success) {
+                                            alert('已保存!');
+                                        } else {
+                                            alert('保存到本地文件失败：\n' + response.error);
+                                            console.error("Save to file failed (ExtendScript reported error):", response.error);
+                                        }
+                                    } catch (e) {
+                                        console.error("[ExtendScript $.todo.saveTodos JSON PARSE ERROR]:", e, "\n[RAW RESULT]:", result);
+                                        alert('保存操作返回异常，或结果无法解析。\n请查看控制台 (F12 -> Console) 获取详细错误信息。\n原始返回: "' + result + '"');
+                                    }
+                                });
+                            } catch (e) {
+                                console.error("[JavaScript Call to csInterface.evalScript ERROR]:", e);
+                                alert('执行保存到本地文件操作时发生 JavaScript 错误。请查看控制台。');
+                            }
+                        } else {
+                            alert('未在CEP环境中运行，无法保存到本地文件。');
+                        }
+                    },
+                handleGlobalKeyDown(event) { // 新增：处理全局keydown
+                    if (event.key === 'Alt') {
+                        this.isAltPressed = true;
+                    }
+                },
+                handleGlobalKeyUp(event) { // 新增：处理全局keyup
+                    if (event.key === 'Alt') {
+                        this.isAltPressed = false;
+                    }
+                },
             },
                 mounted() {
                     this.show = true;
@@ -1156,6 +1236,13 @@
                     that.windowWidth = window.fullWidth; // 宽
                         })()
                     };
+                    // 新增：Alt键事件监听
+                    window.addEventListener('keydown', this.handleGlobalKeyDown);
+                    window.addEventListener('keyup', this.handleGlobalKeyUp);
+                },
+                beforeDestroy() { // 新增：移除Alt键事件监听
+                    window.removeEventListener('keydown', this.handleGlobalKeyDown);
+                    window.removeEventListener('keyup', this.handleGlobalKeyUp);
                 },
                 directives: {
                     focus: {
@@ -1202,6 +1289,12 @@
                     showEmptyTips() {
                         return this.filteredTodos.length === 0 && this.intention !== 'removed';
                 },
+                saveLocalButtonComputedText() { // 新增：计算属性决定按钮文本
+                    if (this.isAltPressed && this.isMouseOverSaveButton) {
+                        return '打开本地预设';
+                    }
+                    return '保存到本地';
+                }
             },
                 })
         </script>
