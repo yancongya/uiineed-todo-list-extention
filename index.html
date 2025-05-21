@@ -102,18 +102,21 @@
         }
         
         .add-content-wrapper.show-input {
-            animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); */ /* 旧动画 1 */
+            /* animation: gentlePopIn 0.4s ease-out forwards; */ /* 旧动画 2 */
+            animation: slideDownFadeInScaleUp 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* 新动画 */
         }
         
-        @keyframes bounceIn {
-            0% { 
+        /* @keyframes bounceIn { ... } */ /* 旧的 bounceIn 动画定义已注释 */
+
+        /* @keyframes gentlePopIn { ... } */ /* 旧的 gentlePopIn 动画定义已注释 */
+
+        @keyframes slideDownFadeInScaleUp { /* 新的 slideDownFadeInScaleUp 动画定义 */
+            0% {
                 opacity: 0;
-                transform: translate(-50%, -40%) scale(0.8);
+                transform: translate(-50%, -70%) scale(0.9);
             }
-            60% { 
-                transform: translate(-50%, -52%) scale(1.05);
-            }
-            100% { 
+            100% {
                 opacity: 1;
                 transform: translate(-50%, -50%) scale(1);
             }
@@ -471,7 +474,7 @@
                 <div class="container header ">
                     <div class="todo-input">
                         <h1 class="title">
-                            <img src="public/img/todo.svg" alt="" class="title-1" draggable="false">
+                            <img src="public/img/todo.svg" alt="" class="title-1" draggable="false" title="点击创建任务">
                             <div class="ani-vector">
                                 <span></span>
                                 <span></span>
@@ -599,47 +602,54 @@
                             <!-- <li v-if="hasRemovedTodo" ><input type="button" value="撤销" v-if="hasRemovedTodo" @click="restoreTodo()"></li> -->
                             <li > <input class="btn-small action-showAll"
                                     type="button" value="全部" :class="{selected: intention === 'all'}"
-                                        @click="intention ='all'"></li>
+                                        @click="intention ='all'" title="显示全部待办事项"></li>
                             <li v-if="completedTodosCount"><input class="btn-small action-progress" type="button"
                                     value="进行中" v-if="leftTodosCount" :class="{selected: intention === 'ongoing'}"
-                                    @click="intention ='ongoing'"></li>
+                                    @click="intention ='ongoing'" title="显示进行中的待办事项"></li>
                                 <li v-if="completedTodosCount">
                                 <input class="btn-small action-completed" type="button" value="已完成"
                                     v-if="completedTodosCount" :class="{selected: intention === 'completed'}"
-                                        @click="intention='completed'">
+                                        @click="intention='completed'" title="显示已完成的待办事项">
                                 </li>
                                 <li v-if="recycleBin.length">
                                 <input class="btn-small action-deleted" type="button" v-if="recycleBin.length"
-                                    :class="{selected: intention === 'removed'}" value="回收站" @click="intention='removed'" />
+                                    :class="{selected: intention === 'removed'}" value="回收站" @click="intention='removed'" title="查看已删除的待办事项" />
                                 </li>
                             </ul>
                             <ul class="todo-func-list batch">
                             <!-- <li v-if="todos.length">批量操作：</li> -->
                             <li v-if="leftTodosCount"> <input type="button" class="btn-small completed-all"
-                                    v-if="leftTodosCount" value="全部标为已完成" @click="markAllAsCompleted"> </li>
+                                    v-if="leftTodosCount" value="全部标为已完成" @click="markAllAsCompleted" title="将所有未完成的待办事项标记为已完成"> </li>
                             <li v-if="completedTodosCount"> <input type="button" value="清除已完成"
-                                    class="btn-small completed-clear" v-if="completedTodosCount" @click="clearCompleted">
+                                    class="btn-small completed-clear" v-if="completedTodosCount" @click="clearCompleted" title="清除所有已完成的待办事项（移至回收站）">
                                 </li>
                             <li v-if="todos.length"><input type="button" class="btn-small clear-all" value="清除全部"
-                                    @click="clearAll"> </li>
+                                    @click="clearAll" title="清除所有待办事项（移至回收站）"> </li>
                             </ul>
                             <ul class="todo-func-list datasave">
-                                <li v-if="leftTodosCount">
-                              <input type="button" value="导出数据"  class="btn-small action-download btn-data-action" id="download" onclick="handleClickDownload()"></input>
+                                <li> <!-- 修改：现在是专用的"导入预设"按钮 -->
+                                    <input type="button" 
+                                           value="导入预设" 
+                                           class="btn-small action-import-preset btn-data-action" 
+                                           @click="triggerImport" 
+                                           title="从.list文件导入预设" />
                                 </li>
-                                <li>
-                                <input type="button" :value="saveLocalButtonComputedText" class="btn-small action-save-local btn-data-action" id="saveLocal" @click="handleSaveClick" @mouseenter="isMouseOverSaveButton = true" @mouseleave="isMouseOverSaveButton = false" />
-                                </li>
-                                <li>
-                             <input  value="导入(txt/json)" type="button" class="btn-small action-import btn-data-action" id="import" />
-                                <!-- <input type="file" id="import-file" accept=".txt,.json" style="display:none"> -->
+                                <li> <!-- "保存到本地"按钮 -->
+                                    <input type="button" 
+                                           :value="saveLocalButtonComputedText" 
+                                           class="btn-small action-save-local btn-data-action" 
+                                           id="saveLocal" 
+                                           @click="handleSaveClick" 
+                                           @mouseenter="isMouseOverSaveButton = true" 
+                                           @mouseleave="isMouseOverSaveButton = false" 
+                                           title="保存当前待办事项列表到本地文件 (Alt+点击 打开文件夹)" />
                                 </li>
                             </ul>
 
                         <!-- 新增AE功能区 -->
                         <ul class="todo-func-list ae-functions" v-if="typeof csInterface !== 'undefined' && csInterface">
                             <li>
-                                <input type="button" value="创建AE图层" class="btn-small action-create-layers" @click="createTodoLayers" />
+                                <input type="button" value="创建AE图层" class="btn-small action-create-layers" @click="createTodoLayers" title="根据当前待办事项列表在 After Effects 中创建图层" />
                             </li>
                         </ul>
                         </div>
@@ -807,15 +817,15 @@
                 },
             save: function (todos) {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-                // 如果在AE环境中，同步保存到文件
-                if (typeof csInterface !== 'undefined' && csInterface) {
+                // 如果在AE环境中，同步保存到文件 -- 这部分将被移除
+                /* if (typeof csInterface !== 'undefined' && csInterface) {
                     try {
                         var todosStr = JSON.stringify(todos);
                         csInterface.evalScript('$.todo.saveTodos("' + encodeURIComponent(todosStr) + '")');
                     } catch(e) {
                         console.error("保存到AE失败:", e);
                     }
-                }
+                } */
                 }
             }
         </script>
@@ -844,8 +854,9 @@
                         slogan: this.getSlogan(),
                         isEditing: false,
                         originalSlogan: "",
-                        isAltPressed: false, // 新增：追踪Alt键状态
-                        isMouseOverSaveButton: false // 新增：追踪鼠标是否在"保存本地"按钮上
+                        isAltPressed: false, 
+                        isMouseOverSaveButton: false
+                        // isMouseOverExportImportButton: false // 已移除
                 }
                 },
             // 监测 todos 列表的变化，将变化存储到 local storage
@@ -1220,16 +1231,119 @@
                             alert('未在CEP环境中运行，无法保存到本地文件。');
                         }
                     },
-                handleGlobalKeyDown(event) { // 新增：处理全局keydown
-                    if (event.key === 'Alt') {
-                        this.isAltPressed = true;
-                    }
-                },
-                handleGlobalKeyUp(event) { // 新增：处理全局keyup
-                    if (event.key === 'Alt') {
-                        this.isAltPressed = false;
-                    }
-                },
+                handleGlobalKeyDown(event) { 
+                        if (event.key === 'Alt') {
+                            this.isAltPressed = true;
+                        }
+                    },
+                    handleGlobalKeyUp(event) { 
+                        if (event.key === 'Alt') {
+                            this.isAltPressed = false;
+                        }
+                    },
+                    triggerImport: function() { // 导入逻辑 (保持不变，之前已整合)
+                        var self = this; 
+                        if (typeof csInterface !== 'undefined' && csInterface) {
+                            csInterface.evalScript('File.openDialog("选择待办事项文件", "*.list;*.json;*.txt", false)', function(filePath) {
+                                if (!filePath) return;
+                                const readScript = `
+                                (function() {
+                                    try {
+                                        var file = new File(decodeURI("${encodeURI(filePath)}"));
+                                        file.open("r");
+                                        file.encoding = "UTF-8";
+                                        var content = file.read();
+                                        file.close();
+                                        return JSON.stringify({success: true, content: content, path: decodeURI(file.fsName)});
+                                    } catch(e) {
+                                        return JSON.stringify({success: false, error: e.message});
+                                    }
+                                })();`;
+                                csInterface.evalScript(readScript, function(result) {
+                                    try {
+                                        const response = JSON.parse(result);
+                                        if (response.success) {
+                                            // 不再直接解析和合并，而是将文件内容字符串传递给 ExtendScript
+                                            csInterface.evalScript(`$.todo.importAndReplaceData(${JSON.stringify(response.content)})`, function (resultStr) {
+                                                try {
+                                                    var evalResponse = JSON.parse(resultStr);
+                                                    if (evalResponse.success) {
+                                                        // 使用 ExtendScript 返回并处理过的数据更新 Vue
+                                                        self.todos = evalResponse.data;
+                                                        todoStorage.save(self.todos); // 保存到 localStorage
+                                                        alert('预设已成功导入并覆盖本地 todo.list！');
+                                                        // self.currentFilter = 'all'; // 可选：重置筛选器
+                                                    } else {
+                                                        console.error("Import and Replace Error (ExtendScript):", evalResponse.error);
+                                                        alert('导入预设失败 (ExtendScript): ' + evalResponse.error, '错误');
+                                                    }
+                                                } catch (evalError) {
+                                                    console.error("Error parsing ExtendScript response:", evalError, "Raw response:", resultStr);
+                                                    alert('处理导入结果时出错: ' + evalError.toString(), '错误');
+                                                }
+                                            });
+                                        } else {
+                                            alert('读取文件失败：' + response.error, '错误');
+                                        }
+                                    } catch(e) {
+                                        console.error("无法解析读取结果:", e);
+                                        alert('读取过程发生错误', '错误');
+                                    }
+                                });
+                            });
+                        } else {
+                            var tempFileInput = document.createElement('input');
+                            tempFileInput.type = 'file';
+                            tempFileInput.accept = '.list,.json,.txt';
+                            tempFileInput.style.display = 'none';
+                            document.body.appendChild(tempFileInput);
+                            tempFileInput.onchange = function(event) {
+                                var file = event.target.files[0];
+                                if (file) {
+                                    var reader = new FileReader();
+                                    reader.onload = function (e) {
+                                        var fileContent = e.target.result;
+                                        try {
+                                            // 不再直接解析和合并，而是将文件内容字符串传递给 ExtendScript
+                                            csInterface.evalScript(`$.todo.importAndReplaceData(${JSON.stringify(fileContent)})`, function (resultStr) {
+                                                try {
+                                                    var result = JSON.parse(resultStr);
+                                                    if (result.success) {
+                                                        // 使用 ExtendScript 返回并处理过的数据更新 Vue
+                                                        self.todos = result.data;
+                                                        todoStorage.save(self.todos); // 保存到 localStorage
+                                                        self.showToast('预设已成功导入并覆盖本地 todo.list！', 'success');
+                                                        self.currentFilter = 'all'; // 重置筛选器以显示所有任务
+                                                    } else {
+                                                        console.error("Import and Replace Error (ExtendScript):", result.error);
+                                                        self.showToast('导入预设失败 (ExtendScript): ' + result.error, 'error');
+                                                    }
+                                                } catch (evalError) {
+                                                    console.error("Error parsing ExtendScript response:", evalError, "Raw response:", resultStr);
+                                                    self.showToast('处理导入结果时出错: ' + evalError.toString(), 'error');
+                                                }
+                                            });
+                                        } catch (err) {
+                                            console.error("Error reading or processing file:", err);
+                                            self.showToast('读取或处理文件时出错: ' + err.message, 'error');
+                                        }
+                                    };
+                                    reader.onerror = function (e) {
+                                        console.error("File reading error:", e);
+                                        self.showToast('读取文件失败!', 'error');
+                                    };
+                                    if (file.name.endsWith('.json') || file.name.endsWith('.list')) {
+                                        reader.readAsText(file);
+                                    } else {
+                                        self.showToast('请选择 .json 或 .list 文件!', 'warning');
+                                    }
+                                }
+                                // 重置input，以便可以再次选择相同的文件
+                                event.target.value = null;
+                            };
+                            tempFileInput.click();
+                        }
+                    },
             },
                 mounted() {
                     this.show = true;
@@ -1295,7 +1409,7 @@
                     showEmptyTips() {
                         return this.filteredTodos.length === 0 && this.intention !== 'removed';
                 },
-                saveLocalButtonComputedText() { // 新增：计算属性决定按钮文本
+                saveLocalButtonComputedText() { 
                     if (this.isAltPressed && this.isMouseOverSaveButton) {
                         return '打开本地预设';
                     }
@@ -1306,192 +1420,16 @@
         </script>
         <script>
         // 修改导出导入逻辑，使用CEP与ExtendScript交互
-        const handleClickDownload = () => {
-            // 检查csInterface是否存在且可用
-            if (typeof csInterface !== 'undefined' && csInterface) {
-                try {
-                    // 使用ExtendScript的File对象显示保存对话框，让用户选择保存位置
-                    const todosText = JSON.stringify(todoStorage.fetch(), null, 2);
-                    const saveScript = `
-                    (function() {
-                        try {
-                            // 获取默认保存路径
-                            var defaultPath = $.todo.getStoragePath();
-                            // 创建保存对话框
-                            var saveFile = File.saveDialog("保存待办事项文件", "待办事项:*.list,所有文件:*.*");
-                            
-                            if (saveFile) {
-                                // 确保文件扩展名为.list
-                                if (!saveFile.name.match(/\\.list$/i)) {
-                                    saveFile = new File(saveFile.absoluteURI + ".list");
-                                }
-                                
-                                saveFile.open("w");
-                                saveFile.write(decodeURIComponent("${encodeURIComponent(todosText)}"));
-                                saveFile.close();
-                                return JSON.stringify({
-                                    success: true, 
-                                    path: decodeURI(saveFile.fsName)
-                                });
-                            } else {
-                                return JSON.stringify({success: false, error: "保存被取消"});
-                            }
-                        } catch(e) {
-                            return JSON.stringify({success: false, error: e.message});
-                        }
-                    })();`;
-                    
-                    csInterface.evalScript(saveScript, function(result) {
-                        try {
-                            const response = JSON.parse(result);
-                            if (response.success) {
-                                alert('数据已保存到：' + response.path);
-                            } else {
-                                if (response.error !== "保存被取消") {
-                                    alert('保存失败：' + response.error, '错误');
-                                }
-                            }
-                        } catch(e) {
-                            console.error("无法解析保存结果:", e);
-                            alert('保存过程发生错误', '错误');
-                        }
-                    });
-                    return;
-                } catch(e) {
-                    console.error("无法使用ExtendScript:", e);
-                    // 出错时回退到本地下载
-                }
-            }
-            
-            // 回退到原有逻辑，用于非AE环境
-            const todosText = JSON.stringify(todoStorage.fetch(), null, 2);
-            const date = new Date().toISOString().replace(/-|:|\.\d+/g, '');
-            const fileName = `AE待办事项-${date.slice(0, 8)}-${date.slice(9, 15)}.txt`;
-            
-            const element = document.createElement('a');
-            element.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(todosText);
-            element.download = fileName;
-            
-                document.body.appendChild(element);
-                element.click();
-                document.body.removeChild(element);
-        };
+        // const handleClickDownload = () => { ... }; // 这部分逻辑已移入 triggerExport Vue method
 
         // 导入文件
-        let tempFileInput = null; // 用于存储动态创建的文件输入元素
-            document.getElementById('import').addEventListener('click', function() {
-            if (typeof csInterface !== 'undefined' && csInterface) {
-                // 使用CEP文件打开对话框
-                csInterface.evalScript('File.openDialog("选择待办事项文件", "待办事项:*.list;*.json;*.txt", false)', function(filePath) {
-                    if (!filePath) return;
-                    
-                    // 读取选择的文件
-                    const readScript = `
-                    (function() {
-                        try {
-                            var file = new File(decodeURI("${encodeURI(filePath)}"));
-                            file.open("r");
-                            var content = file.read();
-                            file.close();
-                            return JSON.stringify({
-                                success: true,
-                                content: content,
-                                path: decodeURI(file.fsName)
-                            });
-                        } catch(e) {
-                            return JSON.stringify({success: false, error: e.message});
-                        }
-                    })();`;
-                    
-                    csInterface.evalScript(readScript, function(result) {
-                        try {
-                            const response = JSON.parse(result);
-                            
-                            if (response.success) {
-                                try {
-                                    const importedData = JSON.parse(response.content.trim());
-                                    
-                                    // 从localStorage获取当前数据
-                                    var currentTodos = todoStorage.fetch() || [];
-                                    // 获取当前数据的数量，用于生成新的唯一id
-                                    var nextIdIndex = currentTodos.length;
-                                    // 遍历importedData，更新每一项的id
-                                    importedData.forEach((item, index) => {
-                                        item.id = nextIdIndex + index;
-                                    });
-                                    // 将新导入的数据追加到现有数据中
-                                    var updatedTodos = currentTodos.concat(importedData);
-                                    // 更新localStorage
-                                    todoStorage.save(updatedTodos);
-                                    // 更新页面内容
-                                    updatePageContent(updatedTodos);
-                                    alert('成功从文件导入数据：' + response.path);
-                                } catch (error) {
-                                    alert('文件解析错误，请确保文件格式正确：' + error.message, '错误');
-                                }
-                            } else {
-                                alert('读取文件失败：' + response.error, '错误');
-                            }
-                        } catch(e) {
-                            console.error("无法解析读取结果:", e);
-                            alert('读取过程发生错误', '错误');
-                        }
-                    });
-                });
-            } else {
-                // 非AE环境，使用原有逻辑
-                if (!tempFileInput) {
-                    tempFileInput = document.createElement('input');
-                    tempFileInput.type = 'file';
-                    tempFileInput.accept = '.txt,.json,.list';
-                    tempFileInput.style.display = 'none';
-                    this.parentNode.appendChild(tempFileInput);
-
-                    tempFileInput.addEventListener('change', function(event) {
-                        var file = event.target.files[0];
-                        if (!file) return;
-                        
-                        var reader = new FileReader();
-                        reader.onload = function(e) {
-                            var content = e.target.result;
-                            try {
-                                var importedData = JSON.parse(content.trim());
-                                
-                                // 从localStorage获取当前数据
-                                var currentTodos = todoStorage.fetch() || [];
-                                // 获取当前数据的数量，用于生成新的唯一id
-                                var nextIdIndex = currentTodos.length;
-                                // 遍历importedData，更新每一项的id
-                                importedData.forEach((item, index) => {
-                                    item.id = nextIdIndex + index;
-                                });
-                                // 将新导入的数据追加到现有数据中
-                                var updatedTodos = currentTodos.concat(importedData);
-                                // 更新localStorage
-                                todoStorage.save(updatedTodos);
-                                // 更新页面内容
-                                updatePageContent(updatedTodos);
-                                alert('文件导入成功，数据已追加！');
-                            } catch (error) {
-                                alert('文件解析错误，请确保文件格式正确：' + error.message, '错误');
-                            }
-                        };
-                        reader.onerror = function(e) {
-                            alert('读取文件时发生错误：' + e.target.error.name, '错误');
-                        };
-                        reader.readAsText(file);
-                        this.parentNode.removeChild(tempFileInput);
-                        tempFileInput = null;
-                    });
-                }
-                tempFileInput.click();
-            }
-            });
-
+        // let tempFileInput = null; 
+        // document.getElementById('import').addEventListener('click', function() { ... }); // 这部分逻辑已移入 triggerImport Vue method
+        
         // 更新页面内容函数
-            function updatePageContent(data) {
-                app.todos = data;
-            }
+        // function updatePageContent(data) { // 这个函数不再单独需要，直接操作 this.todos
+        // app.todos = data;
+        // }
         </script>
 
 

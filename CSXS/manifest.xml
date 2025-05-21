@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExtensionManifest Version="7.0" ExtensionBundleId="com.uiineed.todo" ExtensionBundleVersion="1.0.0"
-                   ExtensionBundleName="UINeed Todo AE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                   ExtensionBundleName="UINeed Todo@烟囱鸭" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <ExtensionList>
         <Extension Id="com.uiineed.todo.panel" Version="1.0.0" />
     </ExtensionList>
@@ -31,7 +31,7 @@
                 </Lifecycle>
                 <UI>
                     <Type>Panel</Type>
-                    <Menu>UINeed Todo AE</Menu>
+                    <Menu>UINeed Todo@烟囱鸭</Menu>
                     <Geometry>
                         <Size>
                             <Width>380</Width>

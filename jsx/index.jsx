@@ -418,6 +418,122 @@ $.todo = {
         } catch (e) {
             return JSON.stringify({success: false, error: e.message});
         }
+    },
+
+    // 新增：生成唯一ID的辅助函数
+    generateId: function() {
+        return '_' + Math.random().toString(36).substr(2, 9);
+    },
+
+    // 新增：兼容 ExtendScript 的 ISO 日期格式化函数
+    getISOStringForExtendScript: function(date) {
+        function pad(number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        }
+        function padMilliseconds(number) {
+            if (number < 10) {
+                return '00' + number;
+            } else if (number < 100) {
+                return '0' + number;
+            }
+            return number;
+        }
+        return date.getFullYear() +
+            '-' + pad(date.getMonth() + 1) +
+            '-' + pad(date.getDate()) +
+            'T' + pad(date.getHours()) +
+            ':' + pad(date.getMinutes()) +
+            ':' + pad(date.getSeconds()) +
+            '.' + padMilliseconds(date.getMilliseconds()) +
+            'Z';
+    },
+
+    // 新增：导入并替换数据
+    importAndReplaceData: function(importedDataString) {
+        var result = { success: false, error: '', data: null };
+        try {
+            var storagePath = this.getStoragePath(); // 使用 this 调用
+            if (storagePath.indexOf("ERROR_IN_GETSTORAGEPATH") === 0) {
+                result.error = "无法获取存储路径: " + storagePath;
+                return JSON.stringify(result);
+            }
+
+            var file = new File(storagePath + "todo.list");
+            var parsedData;
+            try {
+                parsedData = JSON.parse(importedDataString);
+            } catch (e) {
+                result.error = "导入的数据格式无效 (非 JSON): " + e.toString();
+                return JSON.stringify(result);
+            }
+
+            if (!parsedData || typeof parsedData.length !== 'number') { 
+                result.error = "导入的数据必须是一个 JSON 数组。";
+                return JSON.stringify(result);
+            }
+
+            var processedTodos = [];
+            for (var i = 0; i < parsedData.length; i++) {
+                var item = parsedData[i];
+                // 基础验证，确保 title 存在且为字符串
+                if (item && typeof item.title === 'string') { 
+                    processedTodos.push({
+                        id: this.generateId(), // 使用 this 调用
+                        title: item.title,
+                        completed: false,        
+                        archived: false,         
+                        color: item.color || '#ffffff', 
+                        createdDate: item.createdDate || this.getISOStringForExtendScript(new Date()), // 使用新的辅助函数
+                        dueDate: item.dueDate || null, // 确保有默认值
+                        notes: item.notes || '',     // 确保有默认值
+                        priority: item.priority || 'medium',
+                        tags: item.tags || []
+                    });
+                }
+            }
+            
+            var dataString = JSON.stringify(processedTodos, null, 4); // 使用 4 个空格进行美化
+
+            file.encoding = "UTF-8";
+            if (!file.open("w")) {
+                result.error = "无法打开文件进行写入。路径: " + decodeURI(file.fsName) + ". 错误: " + file.error;
+                return JSON.stringify(result);
+            }
+            
+            var writeSuccess = file.write(dataString);
+            if (!writeSuccess) {
+                 var writeError = file.error;
+                 file.close(); 
+                 result.error = "写入文件失败。路径: " + decodeURI(file.fsName) + ". 错误: " + writeError;
+                 return JSON.stringify(result);
+            }
+            
+            if (!file.close()) {
+                 result.error = "关闭文件失败。路径: " + decodeURI(file.fsName) + ". 错误: " + file.error;
+                 // 即使关闭失败，也尝试继续，因为数据可能已写入
+            }
+            
+            // 再次检查文件是否存在，以确认写入
+            var checkFile = new File(storagePath + "todo.list");
+            if (!checkFile.exists) {
+                result.error = "文件写入操作后，文件未找到或未能正确创建。路径: " + decodeURI(checkFile.fsName);
+                // 不覆盖之前的关闭错误，如果有关闭错误，那个更重要
+                if(result.error.indexOf("关闭文件失败") === -1) {
+                    return JSON.stringify(result); 
+                }
+            }
+
+            result.success = true;
+            result.data = processedTodos; 
+            return JSON.stringify(result);
+
+        } catch (e) {
+            result.error = "导入并替换数据时发生异常: " + e.toString();
+            return JSON.stringify(result);
+        }
     }
 };
 
