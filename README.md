@@ -1,8 +1,10 @@
 # Uiineed Todo List - AE扩展
 
+[English](README.en.md) | 简体中文
+
 > 原创作者：[@Rico的设计漫想](https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f) | [原项目地址](https://github.com/ricocc/uiineed-todo-list)
 
-一个为Adobe After Effects设计的待办事项扩展插件，基于[Uiineed Todo List](https://github.com/ricocc/uiineed-todo-list) 进行二次开发，支持流畅动效和本地数据存储，帮助设计师高效管理AE工作流程。
+一个为Adobe After Effects设计的待办事项扩展插件，基于[Uiineed Todo List](https://github.com/ricocc/uiineed-todo-list) 进行二次开发，支持流畅动效和本地数据存储，帮助设计师在AE高效管理时间流程。
 
 ## 📸 界面预览
 
@@ -43,6 +45,8 @@
 ## 💡 使用方法
 
 ### 安装步骤
+
+直接下载
 
 作为AE扩展安装后，可在AE中直接打开并使用：
 
@@ -94,12 +98,18 @@
   <p style="color: #666; font-size: 14px; text-align: center; margin: 0;">任务调整</p>
 </div>
 
+<div style="display: inline-block; margin-right: 20px; vertical-align: top; min-width: 300px;">
+  <img src="public/img/sc/操作.webp" alt="自适应操作" style="width: 300px; border-radius: 8px; margin-bottom: 10px;">
+  <p style="color: #666; font-size: 14px; text-align: center; margin: 0;">自适应操作</p>
+</div>
+
 <div style="display: inline-block; vertical-align: top; min-width: 300px;">
   <img src="public/img/sc/修改名字.webp" alt="修改名字演示" style="width: 300px; border-radius: 8px; margin-bottom: 10px;">
   <p style="color: #666; font-size: 14px; text-align: center; margin: 0;">修改名字</p>
 </div>
 </div>
 </div>
+
 
 ## 📄 许可证
 
@@ -128,11 +138,12 @@
 
 本项目同时支持GitHub Pages部署，您可以通过以下链接访问在线演示版本：
 
-- GitHub Pages链接: `https://你的用户名.github.io/uiineed-todo-list/`
+- GitHub Pages链接:
+- `https://todo.xn--jcs561df75a.space/`
+- `https://yancongya.github.io/Uiineed-Todo-List-For-AE/`
 
 ### 在线演示版本注意事项
 
 - 在线演示版本功能与扩展版本基本一致，但无法进行扩展特有的操作
 - 在线版本数据使用浏览器的localStorage存储，不同设备无法同步
 - 在线版本主要用于快速体验和功能预览，完整功能请使用扩展版本
-

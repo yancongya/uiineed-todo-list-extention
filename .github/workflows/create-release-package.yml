@@ -1,0 +1,69 @@
+name: Create Release Package
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Create Extension Package
+        run: |
+          # 创建一个临时目录用于整理文件
+          mkdir -p temp/uiineed-todo-list
+          
+          # 复制必要的文件到临时目录
+          cp -r CSXS/ temp/uiineed-todo-list/
+          cp -r jsx/ temp/uiineed-todo-list/
+          cp -r lib/ temp/uiineed-todo-list/
+          
+          # 复制必要的public文件，但排除github-pages-adapter.js
+          mkdir -p temp/uiineed-todo-list/public
+          cp -r public/css temp/uiineed-todo-list/public/
+          cp -r public/front temp/uiineed-todo-list/public/
+          cp -r public/img temp/uiineed-todo-list/public/
+          mkdir -p temp/uiineed-todo-list/public/js
+          cp public/js/*.js temp/uiineed-todo-list/public/js/
+          rm -f temp/uiineed-todo-list/public/js/github-pages-adapter.js
+          
+          # 复制其他必要文件
+          cp .debug temp/uiineed-todo-list/
+          cp index.html temp/uiineed-todo-list/
+          cp LICENSE temp/uiineed-todo-list/
+          cp README.md temp/uiineed-todo-list/
+          
+          # 进入临时目录
+          cd temp
+          
+          # 创建ZIP包
+          zip -r ../uiineed-todo-list-ae-extension.zip uiineed-todo-list
+          
+          # 返回根目录
+          cd ..
+          
+          # 输出ZIP路径以便后续步骤使用
+          echo "RELEASE_ZIP=uiineed-todo-list-ae-extension.zip" >> $GITHUB_ENV
+
+      - name: Upload Release Asset
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.RELEASE_ZIP }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ae-extension-package
+          path: ${{ env.RELEASE_ZIP }} 
