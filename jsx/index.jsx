@@ -111,7 +111,7 @@ $.todo = {
             if (readError) {
                  return JSON.stringify({success: false, error: "读取文件时出错。路径: " + decodeURI(file.fsName) + ". 错误: " + readError, data: []});
             }
-
+            
             // 尝试解析数据
             var parsedData = JSON.parse(content);
             
@@ -135,11 +135,11 @@ $.todo = {
             }
             // 兼容旧格式（仅todos数组）
             else {
-                return JSON.stringify({
-                    success: true, 
+            return JSON.stringify({
+                success: true, 
                     data: parsedData,
-                    path: decodeURI(file.fsName)
-                });
+                path: decodeURI(file.fsName)
+            });
             }
         } catch (e) {
             return JSON.stringify({success: false, error: "加载时发生异常: " + e.toString() + ". 尝试的文件路径: " + (filePath ? decodeURI(filePath) : (path ? decodeURI(path) + "todo.list" : "未知")), data: []});
@@ -549,7 +549,7 @@ $.todo = {
                     });
                 }
             }
-
+            
             // 如果有标语，保存到ExtendScript设置
             if (slogan) {
                 try {
@@ -597,7 +597,7 @@ $.todo = {
             }
 
             result.success = true;
-            result.data = processedTodos;
+            result.data = processedTodos; 
             result.slogan = slogan;
             return JSON.stringify(result);
 

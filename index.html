@@ -27,13 +27,13 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translate3d(0, 30px, 0);
+                transform: translate3d(0, 20px, 0);
                 max-height: 0;
             }
             to {
                 opacity: 1;
                 transform: translate3d(0, 0, 0);
-                max-height: 150px;
+                max-height: 120px;
             }
         }
         
@@ -46,22 +46,28 @@
                         opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform-origin: center top;
             padding: 0;
-            margin-bottom: 12px !important;
+            margin-bottom: 8px !important;  /* 减少项目间距 */
         }
         
         /* 减少内容区域的内边距 */
         .todo-content {
-            padding: 10px 56px !important;
-            min-height: 45px !important;
+            padding: 8px 48px !important;  /* 减少内边距 */
+            min-height: 38px !important;   /* 减少最小高度 */
         }
         
         /* 调整按钮位置 */
         .btn-finish, .btn-unfinish {
-            top: 8px !important;
+            top: 6px !important;
+            left: 10px !important;
+            width: 26px !important;  /* 减小按钮尺寸 */
+            height: 26px !important;
         }
         
         .btn-delete, .btn-restore, .btn-edit-submit {
-            top: 8px !important;
+            top: 6px !important;
+            right: 10px !important;
+            width: 26px !important;  /* 减小按钮尺寸 */
+            height: 26px !important;
         }
         
         .todo-item:hover {
@@ -86,13 +92,13 @@
         
         /* 整体列表布局调整 */
         .todo-list {
-            padding: 20px 36px 25px !important;
+            padding: 16px 28px 20px !important;  /* 减少列表内边距 */
         }
         
         /* 减少底部信息栏的高度 */
         .bar-message {
-            height: 38px !important;
-            line-height: 38px !important;
+            height: 36px !important;
+            line-height: 36px !important;
         }
         
         /* 优化弹出动画效果 */
@@ -141,6 +147,7 @@
         .submit-btn {
             height: 48px !important;
             line-height: 48px !important;
+            width: 80px !important;
         }
 
         /* 为.btn-small添加悬浮效果 */
@@ -161,6 +168,39 @@
             background-color: #ffeb3b; /* 一个明亮的黄色，请根据实际需要调整 */
             color: #333; /* 确保文本在黄色背景上可读 */
             /* 这里的 transform 和 box-shadow 会被 .btn-small:hover 的规则覆盖，如果需要不同效果则需调整 */
+        }
+
+        /* 快速指南按钮样式 */
+        .action-quick-guide:hover,
+        .action-quick-guide.selected {
+            background: var(--bg-submit);
+            color: #333;
+        }
+        
+        /* 添加快速指南列表样式 */
+        .quick-guide-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 0;
+            text-align: left;
+        }
+        
+        .quick-guide-list li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .quick-guide-list b {
+            color: var(--font-color);
+            font-weight: 700;
+        }
+
+        #panda{
+            position:absolute;
+            width:200px;
+            height:200px;
+            right:-72px;
+            bottom:-2px;
         }
     </style>
     
@@ -244,7 +284,7 @@
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            width: 300px; /* 修改：宽度从360px减小到300px */
+            width: 280px; /* 修改：宽度从360px减小到300px */
             max-width: 90%;
             padding: 15px; /* 修改：内边距从20px减小到15px */
             animation: popIn 0.3s forwards;
@@ -379,6 +419,94 @@
             100% {
                 transform: translateY(20px);
                 opacity: 0;
+            }
+        }
+        
+        /* 快速指南动画 */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        
+        @keyframes popOut {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        /* 快速指南弹窗响应式样式 */
+        @media only screen and (max-width: 768px) {
+            .quick-guide-dialog {
+                width: 95% !important;
+                max-width: 400px !important;
+                margin: 10px !important;
+                transform: scale(0.95);
+                transform-origin: center;
+            }
+            
+            .quick-guide-title {
+                font-size: 20px !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .quick-guide-item {
+                margin-bottom: 8px !important;
+            }
+            
+            .quick-guide-content {
+                padding: 8px 45px !important;
+                min-height: 40px !important;
+            }
+            
+            .quick-guide-icon {
+                width: 28px !important;
+                height: 28px !important;
+                left: 8px !important;
+            }
+            
+            .quick-guide-btn {
+                padding: 8px 16px !important;
+                font-size: 14px !important;
+            }
+        }
+        
+        /* 手机端更小屏幕适配 */
+        @media only screen and (max-width: 480px) {
+            .quick-guide-dialog {
+                width: 98% !important;
+                max-width: 380px !important;
+                margin: 5px !important;
+                transform: scale(0.9);
+            }
+            
+            .quick-guide-content {
+                padding: 6px 42px !important;
+                min-height: 38px !important;
+            }
+            
+            .quick-guide-icon {
+                width: 24px !important;
+                height: 24px !important;
+                left: 8px !important;
+                font-size: 16px !important;
             }
         }
         
@@ -660,6 +788,46 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- 快速指南弹窗 -->
+                    <div class="custom-alert-overlay quick-guide-overlay" v-if="isQuickGuideVisible" style="z-index:10000; display:flex; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); animation:fadeIn 0.2s ease;" @click.self="hideQuickGuide">
+                        <div class="custom-alert quick-guide-dialog" style="max-width:280px; width:90%; margin:12px; padding:16px; background-color:var(--bg-normal); border:var(--border); border-radius:var(--border-radius); box-shadow:var(--box-shadow); position:relative; max-height:90vh; overflow-y:auto; animation:popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                            <div class="custom-alert-title quick-guide-title" style="text-align:center; font-size:18px; margin-bottom:12px; font-weight:bold; color:var(--font-color);">
+                                <span style="display:inline-block; margin-right:6px;">💡</span>快速指南
+                            </div>
+                            <div class="custom-alert-content" style="padding:0 8px;">
+                                <ul style="list-style:none; padding:0; margin:0; text-align:center;">
+                                    <li style="display:inline-flex; justify-content:center; align-items:center; margin-bottom:8px; color:var(--font-color); width:100%;">
+                                        <span style="margin-right:6px; font-size:14px;">📝</span>
+                                        <span style="font-size:14px;">单击标题创建任务</span>
+                                    </li>
+                                    <li style="display:inline-flex; justify-content:center; align-items:center; margin-bottom:8px; color:var(--font-color); width:100%;">
+                                        <span style="margin-right:6px; font-size:14px;">✏️</span>
+                                        <span style="font-size:14px;">双击修改内容</span>
+                                    </li>
+                                    <li style="display:inline-flex; justify-content:center; align-items:center; margin-bottom:8px; color:var(--font-color); width:100%;">
+                                        <span style="margin-right:6px; font-size:14px;">↕️</span>
+                                        <span style="font-size:14px;">拖拽排序</span>
+                                    </li>
+                                    <li style="display:inline-flex; justify-content:center; align-items:center; margin-bottom:8px; color:var(--font-color); width:100%;">
+                                        <span style="margin-right:6px; font-size:14px;">👉</span>
+                                        <span style="font-size:14px;">查看侧边栏</span>
+                                    </li>
+                                    <li style="display:inline-flex; justify-content:center; align-items:center; margin-bottom:8px; color:var(--font-color); width:100%;">
+                                        <span style="margin-right:6px; font-size:14px;">💾</span>
+                                        <span style="font-size:14px;">导入预设</span>
+                                    </li>
+                                    <li style="display:inline-flex; justify-content:center; align-items:center; margin-bottom:0; color:var(--font-color); width:100%;">
+                                        <span style="margin-right:6px; font-size:14px;">📁</span>
+                                        <span style="font-size:14px;">查看预设和文件夹</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div style="text-align:center; margin-top:12px;">
+                                <button @click="hideQuickGuide" style="background:none; border:none; color:var(--font-color); cursor:pointer; padding:6px 12px; font-size:13px; opacity:0.8; transition:opacity 0.2s;">我知道了</button>
+                            </div>
+                        </div>
+                    </div>
 
                 <div class="footer side-bar" 
                      @mouseenter="onSidebarMouseEnter"
@@ -719,6 +887,13 @@
                                            @mouseenter="isMouseOverSaveButton = true" 
                                            @mouseleave="isMouseOverSaveButton = false" 
                                            title="保存当前待办事项列表到本地文件 (Alt+点击 打开文件夹)" />
+                                </li>
+                                <li> <!-- 新增：快速开始按钮 -->
+                                    <input type="button" 
+                                           value="快速开始" 
+                                           class="btn-small action-quick-guide btn-data-action" 
+                                           @click="showQuickGuide" 
+                                           title="查看快速使用指南" />
                                 </li>
                             </ul>
 
@@ -912,11 +1087,12 @@
             var app = new Vue({
                 el: '#todo-app',
             data: function () {
+                    // 确保所有变量都有初始值
                     return {
                         todos: todoStorage.fetch(),
                         newTodoTitle: '',
                         editedTodo: null,
-                    intention: 'all', //默认为 all
+                        intention: 'all', //默认为 all
                         checkEmpty: false,
                         recycleBin: [],
                         dragIndex: '',
@@ -924,8 +1100,8 @@
                         show: true,
                         delayTime: '1',
                         isShow: false,
-                    shortCut:'开✨',
-                    popShow:true,
+                        shortCut:'开✨',
+                        popShow:true,
                         windowWidth: document.documentElement.clientWidth,
                         slogan: this.getSlogan(),
                         isEditing: false,
@@ -935,8 +1111,10 @@
                         sidebarTimer: null,
                         sidebarEntering: false,
                         sidebarExiting: false,
-                        isMouseOverSidebar: false
-                }
+                        isMouseOverSidebar: false,
+                        // 设置为false，避免页面加载时弹出
+                        isQuickGuideVisible: false
+                    }
                 },
             // 监测 todos 列表的变化，将变化存储到 local storage
                 watch: {
@@ -952,6 +1130,38 @@
                     }
                 },
                 methods: {
+                    showQuickGuide() {
+                        console.log("显示快速指南方法被调用");
+                        // 首先确保它是关闭的
+                        this.isQuickGuideVisible = false;
+                        // 然后在短暂延迟后打开
+                        setTimeout(() => {
+                            this.isQuickGuideVisible = true;
+                            console.log("已设置isQuickGuideVisible为true");
+                        }, 100);
+                    },
+                    hideQuickGuide() {
+                        console.log("关闭快速指南方法被调用");
+                        
+                        // 添加退出动画
+                        const overlay = document.querySelector('.custom-alert-overlay');
+                        const alertBox = document.querySelector('.custom-alert');
+                        
+                        if (overlay && alertBox) {
+                            alertBox.style.animation = 'popOut 0.3s forwards';
+                            overlay.style.animation = 'fadeOut 0.3s forwards';
+                            
+                            // 动画完成后再隐藏
+                            setTimeout(() => {
+                                this.isQuickGuideVisible = false;
+                                console.log("已设置isQuickGuideVisible为false");
+                            }, 300);
+                        } else {
+                            // 如果找不到元素，则直接隐藏
+                            this.isQuickGuideVisible = false;
+                            console.log("已设置isQuickGuideVisible为false");
+                        }
+                    },
                     editText() {
                         this.originalSlogan = this.slogan;
                         this.isEditing = true;
@@ -1008,7 +1218,7 @@
                         }
                         
                         // 如果上述过程中没有设置slogan，则使用本地存储或默认值
-                        return localStorage.getItem('uiineed-slogan') || "今日事今日毕，勿将今事待明日!.☕";
+                    return localStorage.getItem('uiineed-slogan') || "今日事今日毕，勿将今事待明日!.☕";
                     },
                 contorlScreen:function(){
                     if(this.windowWidth < 768){
@@ -1034,7 +1244,7 @@
                             // 关闭侧边栏时添加退场动画
                             this.sidebarExiting = true;
                             setTimeout(() => {
-                                this.isShow = !this.isShow;
+                        this.isShow = !this.isShow;
                                 this.sidebarExiting = false;
                                 this.shortCut = this.isShow ? '关' : '开✨';
                             }, 300);
@@ -1534,8 +1744,8 @@
                             this.sidebarExiting = false;
                             this.shortCut = '关';
                         }, 300);
-                    }
-                },
+                        }
+                    },
             },
                 mounted() {
                     this.show = true;
@@ -1554,6 +1764,13 @@
                     
                     // 添加点击空白处关闭侧边栏的事件监听
                     document.addEventListener('click', this.handleDocumentClick);
+                    
+                    // 添加Esc键关闭快速指南的事件监听
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && this.isQuickGuideVisible) {
+                            this.hideQuickGuide();
+                        }
+                    });
                 },
                 beforeDestroy() { // 新增：移除Alt键事件监听
                     window.removeEventListener('keydown', this.handleGlobalKeyDown);
@@ -1564,6 +1781,13 @@
                     if (this.sidebarTimer) {
                         clearTimeout(this.sidebarTimer);
                     }
+                    
+                    // 移除Esc键关闭快速指南的事件监听
+                    document.removeEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && this.isQuickGuideVisible) {
+                            this.hideQuickGuide();
+                        }
+                    });
                 },
                 directives: {
                     focus: {
@@ -1632,7 +1856,6 @@
         // app.todos = data;
         // }
         </script>
-
 
     </body>
 </html>
