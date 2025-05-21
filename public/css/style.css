@@ -778,21 +778,15 @@ h1 {
  * Footer
  */
 .nav {
-  position: fixed;
+  position: absolute;
   right: 36px;
   top: 8px;
   z-index: 9999;
   padding: 0;
   margin: 0;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
+  align-items: center;
+  justify-content: flex-start;
   user-select: none;
 }
 @media (max-width: 767px) {
