@@ -932,14 +932,14 @@
                                 <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://github.com/yancongya')">
                                     <img src="public/img/social/github.svg" class="ic-social" alt="" title="GitHub">
                                 </a>
-                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f?ref=opensource-todo')">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://www.xiaohongshu.com/user/profile/5c009931f7e8b962bb328c6d')">
                                     <img src="public/img/social/xiaohongshu.svg" class="ic-social" alt="" title="小红书">
                                 </a>
-                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://space.bilibili.com/11442751?ref=opensource-todo')">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://space.bilibili.com/100881808?spm_id_from=333.1387.0.0')">
                                     <img src="public/img/social/bilibili.svg" class="ic-social" alt="" title="哔哩哔哩">
                                 </a>
-                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://ricocc.zcool.com.cn/?ref=opensource-todo')">
-                                    <img src="public/img/social/zcool.svg" class="ic-social" alt="" title="站酷">
+                                <a href="javascript:void(0);" class="social-link" @click="openExternalLink('https://afdian.tv/a/tycon')">
+                                    <img src="public/img/social/aifadian.svg" class="ic-social" alt="" title="爱发电">
                                 </a>
                                 <a href="javascript:void(0);" class="social-link" @click="copyEmail">
                                     <img src="public/img/social/mail.svg" class="ic-social" alt="" title="点击复制邮箱">
@@ -979,59 +979,21 @@
         function openURLInAE(url) {
             if (typeof csInterface !== 'undefined' && csInterface) {
                 try {
-                    // 使用系统命令打开URL
-                    var script = '';
-                    if (navigator.platform.indexOf('Win') !== -1) {
-                        // Windows平台
-                        script = 'var cmd = "explorer \\"' + url + '\\"";' +
-                                'try { ' +
-                                '    var shell = new ActiveXObject("Shell.Application");' +
-                                '    shell.ShellExecute("cmd.exe", "/c " + cmd, null, "open", 0);' +
-                                '    true;' +
-                                '} catch(e) {' +
-                                '    system.callSystem("cmd.exe /c start " + cmd);' +
-                                '    true;' +
-                                '}';
-                    } else {
-                        // macOS平台
-                        script = 'system.callSystem("open \\"' + url + '\\"");' +
-                                'true;';
-                    }
-                    
-                    csInterface.evalScript(script, function(result) {
-                        console.log("打开URL结果:", result);
-                        if (result !== "true" && result !== true) {
-                            // 尝试其他方法
-                            fallbackOpenURL(url);
-                        }
-                    });
+                    // 使用CEP的内置方法打开URL，更加安全和稳定
+                    csInterface.openURLInDefaultBrowser(url);
                 } catch(e) {
-                    console.error("直接系统调用失败:", e);
-                    fallbackOpenURL(url);
-                }
-            } else {
-                window.open(url, '_blank');
-            }
-        }
-        
-        // 辅助函数 - 尝试其他方法打开URL
-        function fallbackOpenURL(url) {
-            try {
-                // 方法1: 使用CEP的openURLInDefaultBrowser
-                csInterface.openURLInDefaultBrowser(url);
-            } catch(e1) {
-                try {
-                    // 方法2: 使用CEP的桌面HTML方法
-                    window.cep.util.openURLInDefaultBrowser(url);
-                } catch(e2) {
+                    console.error("使用CEP打开URL失败:", e);
                     try {
-                        // 方法3: 使用system.openURL
-                        csInterface.evalScript('system.openURL("' + url + '");');
-                    } catch(e3) {
-                        // 最后尝试普通的window.open
+                        // 备选方法
+                        window.cep.util.openURLInDefaultBrowser(url);
+                    } catch(e2) {
+                        console.error("使用CEP备选方法打开URL失败:", e2);
+                        // 最后的备选方案
                         window.open(url, '_blank');
                     }
                 }
+            } else {
+                window.open(url, '_blank');
             }
         }
         
@@ -1039,7 +1001,17 @@
             var STORAGE_KEY = 'uiineed-todos';
             var todoStorage = {
             fetch: function () {
-                // 优先从文件加载数据
+                // 直接使用本地存储，不在初始化时加载文件数据
+                // 这样可以避免初始化时的阻塞操作
+                var todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                todos.forEach(function (todo, index) {
+                    todo.id = index;
+                });
+                todoStorage.uid = todos.length;
+                return todos;
+            },
+            // 新增方法：异步从文件加载数据
+            loadFromFile: function(callback) {
                 if (typeof csInterface !== 'undefined' && csInterface) {
                     try {
                         csInterface.evalScript('$.todo.loadTodos()', function(result) {
@@ -1047,37 +1019,30 @@
                                 var response = JSON.parse(result);
                                 if (response.success && response.data) {
                                     localStorage.setItem(STORAGE_KEY, JSON.stringify(response.data));
-                                    return response.data;
+                                    if (typeof callback === 'function') {
+                                        callback(response.data);
+                                    }
                                 }
                             } catch(e) {
                                 console.error("解析数据失败:", e);
+                                if (typeof callback === 'function') {
+                                    callback(null, e);
+                                }
                             }
                         });
                     } catch(e) {
                         console.error("从AE加载失败:", e);
+                        if (typeof callback === 'function') {
+                            callback(null, e);
+                        }
                     }
+                } else if (typeof callback === 'function') {
+                    callback(null, new Error("CSInterface 不可用"));
                 }
-                
-                // 回退到本地存储
-                    var todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                todos.forEach(function (todo, index) {
-                        todo.id = index;
-                    });
-                    todoStorage.uid = todos.length;
-                    return todos;
-                },
+            },
             save: function (todos) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-                // 如果在AE环境中，同步保存到文件 -- 这部分将被移除
-                /* if (typeof csInterface !== 'undefined' && csInterface) {
-                    try {
-                        var todosStr = JSON.stringify(todos);
-                        csInterface.evalScript('$.todo.saveTodos("' + encodeURIComponent(todosStr) + '")');
-                    } catch(e) {
-                        console.error("保存到AE失败:", e);
-                    }
-                } */
-                }
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+            }
             }
         </script>
         <script>
@@ -1103,7 +1068,7 @@
                         shortCut:'开✨',
                         popShow:true,
                         windowWidth: document.documentElement.clientWidth,
-                        slogan: this.getSlogan(),
+                        slogan: this.getSafeSlogan(localStorage.getItem('uiineed-slogan')) || "今日事今日毕，勿将今事待明日!.☕",
                         isEditing: false,
                         originalSlogan: "",
                         isAltPressed: false, 
@@ -1129,7 +1094,83 @@
                         deep: true
                     }
                 },
+                mounted() {
+                    this.show = true;
+                    var that = this;
+                    this.contorlScreen();
+                    
+                    // 挂载完成后，异步加载文件数据（不阻塞UI）
+                    setTimeout(() => {
+                        todoStorage.loadFromFile((data, error) => {
+                            if (data) {
+                                that.todos = data;
+                            }
+                        });
+                        
+                        // 异步加载标语（不阻塞UI）
+                        this.loadSloganAsync();
+                    }, 500);
+                   
+                   // <!--把window.onresize事件挂在到mounted函数上-->
+                    window.onresize = () => {
+                        return (() => {
+                            window.fullWidth = document.documentElement.clientWidth;
+                    that.windowWidth = window.fullWidth; // 宽
+                        })()
+                    };
+                    // 新增：Alt键事件监听
+                    window.addEventListener('keydown', this.handleGlobalKeyDown);
+                    window.addEventListener('keyup', this.handleGlobalKeyUp);
+                    
+                    // 添加点击空白处关闭侧边栏的事件监听
+                    document.addEventListener('click', this.handleDocumentClick);
+                    
+                    // 添加Esc键关闭快速指南的事件监听
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && this.isQuickGuideVisible) {
+                            this.hideQuickGuide();
+                        }
+                    });
+                },
                 methods: {
+                    // 新增：确保slogan文本安全(解码URL编码的文本)
+                    getSafeSlogan: function(text) {
+                        if (!text) return null;
+                        
+                        // 检查是否是URL编码的文本
+                        try {
+                            // 如果包含%开头的编码字符，尝试解码
+                            if (text.indexOf('%') !== -1) {
+                                return decodeURIComponent(text);
+                            }
+                        } catch (e) {
+                            console.error("解码slogan失败:", e);
+                        }
+                        
+                        return text;
+                    },
+                    // 新增：异步加载标语
+                    loadSloganAsync: function() {
+                        if (typeof csInterface !== 'undefined' && csInterface) {
+                            try {
+                                csInterface.evalScript('$.todo.getSlogan()', (result) => {
+                                    try {
+                                        var response = JSON.parse(result);
+                                        if (response.success && response.slogan) {
+                                            // 解码后再保存到localStorage和Vue变量
+                                            var decodedSlogan = this.getSafeSlogan(response.slogan);
+                                            localStorage.setItem('uiineed-slogan', decodedSlogan);
+                                            this.slogan = decodedSlogan;
+                                        }
+                                    } catch(e) {
+                                        console.error("获取标语失败:", e);
+                                    }
+                                });
+                            } catch(e) {
+                                console.error("调用ExtendScript获取标语失败:", e);
+                            }
+                        }
+                    },
                     showQuickGuide() {
                         console.log("显示快速指南方法被调用");
                         // 首先确保它是关闭的
@@ -1171,9 +1212,10 @@
                     },
                     saveText() {
                         this.isEditing = false;
+                        // 存储原始文本，无需编码
                         localStorage.setItem('uiineed-slogan', this.slogan);
                         
-                        // 同时保存到预设文件
+                        // 同时保存到预设文件，传递时需要编码
                         if (typeof csInterface !== 'undefined' && csInterface) {
                             try {
                                 csInterface.evalScript('$.todo.saveSlogan("' + encodeURIComponent(this.slogan) + '")', function(result) {
@@ -1188,37 +1230,6 @@
                     cancelText() {
                         this.slogan = this.originalSlogan;
                         this.isEditing = false;
-                    },
-                    getSlogan() {
-                        // 首先尝试从ExtendScript获取标语
-                        if (typeof csInterface !== 'undefined' && csInterface) {
-                            try {
-                                // 优先使用本地存储的标语
-                                var localSlogan = localStorage.getItem('uiineed-slogan');
-                                if (localSlogan) {
-                                    return localSlogan;
-                                }
-                                
-                                // 尝试从ExtendScript获取
-                                var self = this;
-                                csInterface.evalScript('$.todo.getSlogan()', function(result) {
-                                    try {
-                                        var response = JSON.parse(result);
-                                        if (response.success && response.slogan) {
-                                            localStorage.setItem('uiineed-slogan', response.slogan);
-                                            self.slogan = response.slogan;
-                                        }
-                                    } catch(e) {
-                                        console.error("获取标语失败:", e);
-                                    }
-                                });
-                            } catch(e) {
-                                console.error("调用ExtendScript获取标语失败:", e);
-                            }
-                        }
-                        
-                        // 如果上述过程中没有设置slogan，则使用本地存储或默认值
-                    return localStorage.getItem('uiineed-slogan') || "今日事今日毕，勿将今事待明日!.☕";
                     },
                 contorlScreen:function(){
                     if(this.windowWidth < 768){
@@ -1747,31 +1758,7 @@
                         }
                     },
             },
-                mounted() {
-                    this.show = true;
-                    var that = this;
-                    this.contorlScreen();
-                   // <!--把window.onresize事件挂在到mounted函数上-->
-                    window.onresize = () => {
-                        return (() => {
-                            window.fullWidth = document.documentElement.clientWidth;
-                    that.windowWidth = window.fullWidth; // 宽
-                        })()
-                    };
-                    // 新增：Alt键事件监听
-                    window.addEventListener('keydown', this.handleGlobalKeyDown);
-                    window.addEventListener('keyup', this.handleGlobalKeyUp);
-                    
-                    // 添加点击空白处关闭侧边栏的事件监听
-                    document.addEventListener('click', this.handleDocumentClick);
-                    
-                    // 添加Esc键关闭快速指南的事件监听
-                    document.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape' && this.isQuickGuideVisible) {
-                            this.hideQuickGuide();
-                        }
-                    });
-                },
+                // mounted 方法在前面已经定义，这里不需要重复定义
                 beforeDestroy() { // 新增：移除Alt键事件监听
                     window.removeEventListener('keydown', this.handleGlobalKeyDown);
                     window.removeEventListener('keyup', this.handleGlobalKeyUp);

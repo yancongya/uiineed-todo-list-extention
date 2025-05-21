@@ -519,6 +519,16 @@ $.todo = {
             if (parsedData && typeof parsedData === 'object' && parsedData.todos) {
                 todos = parsedData.todos;
                 slogan = parsedData.slogan;
+                
+                // 检查slogan是否是URL编码的，如果是则解码
+                if (slogan && typeof slogan === 'string' && slogan.indexOf('%') !== -1) {
+                    try {
+                        slogan = decodeURIComponent(slogan);
+                    } catch(e) {
+                        // 如果解码失败，保留原始值
+                        console.log("解码slogan失败: " + e.toString());
+                    }
+                }
             }
             // 旧格式: [...]
             else if (Array.isArray(parsedData)) {
@@ -610,8 +620,11 @@ $.todo = {
     // 新增方法：保存标语
     saveSlogan: function(sloganText) {
         try {
+            // 解码URL编码的文本
+            var decodedSlogan = decodeURIComponent(sloganText);
+            
             // 保存到设置
-            app.settings.saveSetting("uiineed-todo-list", "slogan", sloganText);
+            app.settings.saveSetting("uiineed-todo-list", "slogan", decodedSlogan);
 
             // 也尝试更新todo.list文件中的标语
             var path = this.getStoragePath();
@@ -646,11 +659,11 @@ $.todo = {
             // 区分新旧格式
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 // 新格式
-                data.slogan = sloganText;
+                data.slogan = decodedSlogan;
             } else if (Array.isArray(data)) {
                 // 旧格式，转换为新格式
                 data = {
-                    slogan: sloganText,
+                    slogan: decodedSlogan,
                     todos: data
                 };
             } else {
@@ -684,6 +697,15 @@ $.todo = {
             // 从设置获取
             if (app.settings.haveSetting("uiineed-todo-list", "slogan")) {
                 slogan = app.settings.getSetting("uiineed-todo-list", "slogan");
+                
+                // 确保返回的是解码后的文本
+                if (slogan && typeof slogan === 'string' && slogan.indexOf('%') !== -1) {
+                    try {
+                        slogan = decodeURIComponent(slogan);
+                    } catch(e) {
+                        // 解码失败，保留原值
+                    }
+                }
             }
             
             return JSON.stringify({
@@ -696,10 +718,83 @@ $.todo = {
                 error: "获取标语时发生异常: " + e.toString()
             });
         }
+    },
+
+    // 新增方法：修复现有预设文件中的编码问题
+    fixExistingPresetFile: function() {
+        try {
+            var path = this.getStoragePath();
+            if (path.indexOf("ERROR_IN_GETSTORAGEPATH") === 0) {
+                return false;
+            }
+
+            var filePath = path + "todo.list";
+            var file = new File(filePath);
+            
+            if (!file.exists) {
+                return false;
+            }
+            
+            file.encoding = "UTF-8";
+            if (!file.open("r")) {
+                return false;
+            }
+            
+            var content = file.read();
+            file.close();
+            
+            // 尝试解析数据
+            var data;
+            try {
+                data = JSON.parse(content);
+            } catch (e) {
+                return false;
+            }
+            
+            // 检查是否有编码问题的slogan
+            var needsFix = false;
+            if (data && typeof data === 'object' && data.slogan && typeof data.slogan === 'string') {
+                if (data.slogan.indexOf('%') !== -1) {
+                    try {
+                        // 尝试解码
+                        var decodedSlogan = decodeURIComponent(data.slogan);
+                        data.slogan = decodedSlogan;
+                        needsFix = true;
+                    } catch(e) {
+                        // 解码失败，保持原样
+                    }
+                }
+            }
+            
+            // 如果不需要修复，直接返回
+            if (!needsFix) {
+                return false;
+            }
+            
+            // 写回文件
+            if (!file.open("w")) {
+                return false;
+            }
+            
+            var writeSuccess = file.write(JSON.stringify(data, null, 2));
+            if (!writeSuccess) {
+                file.close();
+                return false;
+            }
+            
+            file.close();
+            
+            // 成功修复
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 };
 
 // 初始化函数，确保存储路径存在
 (function() {
     $.todo.getStoragePath();
+    // 尝试修复现有预设文件中的编码问题
+    $.todo.fixExistingPresetFile();
 })(); 
