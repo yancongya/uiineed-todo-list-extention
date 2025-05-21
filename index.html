@@ -11,6 +11,16 @@
         <link href="public/css/normalize.css" rel="stylesheet" media="screen">
         <link href="public/css/style.min.css" rel="stylesheet" media="screen">
     
+    <!-- 加载思源黑体字体 -->
+    <style>
+        @font-face {
+            font-family: "SourceHanSansSC-Medium-2";
+            src: url("public/front/SourceHanSansSC-Medium-2.otf") format("opentype");
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+    
     <!-- 自定义动画样式 -->
     <style>
         /* 优化进场动画 */
@@ -384,6 +394,69 @@
             position: relative;
             cursor: pointer;
         }
+
+        /* 侧边栏动画样式 */
+        .side-bar {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 侧边栏进场动画 */
+        @keyframes sidebarEnter {
+            0% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 侧边栏退场动画 */
+        @keyframes sidebarExit {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
+        /* 手机端侧边栏动画 */
+        @media only screen and (max-width: 768px) {
+            @keyframes sidebarEnter {
+                0% {
+                    opacity: 0;
+                    transform: translateX(-30px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes sidebarExit {
+                0% {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateX(-30px);
+                }
+            }
+        }
+
+        /* 动画类 */
+        .sidebar-enter-active {
+            animation: sidebarEnter 0.3s forwards;
+        }
+
+        .sidebar-exit-active {
+            animation: sidebarExit 0.3s forwards;
+        }
     </style>
         <script>
         // 保存原生alert备用
@@ -588,7 +661,10 @@
                         </div>
                     </div>
 
-                <div class="footer side-bar" >
+                <div class="footer side-bar" 
+                     @mouseenter="onSidebarMouseEnter"
+                     @mouseleave="onSidebarMouseLeave"
+                     :class="{ 'sidebar-enter-active': sidebarEntering, 'sidebar-exit-active': sidebarExiting }">
                         <div class="side-shortcut" @click="shortCutAction()" :class="{fold: isShow}">
                             <div class="shortcut-switch">
                                 <span class="shortcut-title">{{shortCut}}</span>
@@ -632,7 +708,7 @@
                                            value="导入预设" 
                                            class="btn-small action-import-preset btn-data-action" 
                                            @click="triggerImport" 
-                                           title="从.list文件导入预设" />
+                                           title="点击导入替换.list文件" />
                                 </li>
                                 <li> <!-- "保存到本地"按钮 -->
                                     <input type="button" 
@@ -855,8 +931,11 @@
                         isEditing: false,
                         originalSlogan: "",
                         isAltPressed: false, 
-                        isMouseOverSaveButton: false
-                        // isMouseOverExportImportButton: false // 已移除
+                        isMouseOverSaveButton: false,
+                        sidebarTimer: null,
+                        sidebarEntering: false,
+                        sidebarExiting: false,
+                        isMouseOverSidebar: false
                 }
                 },
             // 监测 todos 列表的变化，将变化存储到 local storage
@@ -883,13 +962,53 @@
                     saveText() {
                         this.isEditing = false;
                         localStorage.setItem('uiineed-slogan', this.slogan);
+                        
+                        // 同时保存到预设文件
+                        if (typeof csInterface !== 'undefined' && csInterface) {
+                            try {
+                                csInterface.evalScript('$.todo.saveSlogan("' + encodeURIComponent(this.slogan) + '")', function(result) {
+                                    console.log("[ExtendScript $.todo.saveSlogan RAW RESULT]:", result);
+                                    // 即使失败也不显示错误，用户体验更好
+                                });
+                            } catch(e) {
+                                console.error("保存标语到预设文件失败:", e);
+                            }
+                        }
                     },
                     cancelText() {
                         this.slogan = this.originalSlogan;
                         this.isEditing = false;
                     },
                     getSlogan() {
-                    return localStorage.getItem('uiineed-slogan') || "今日事今日毕，勿将今事待明日!.☕";
+                        // 首先尝试从ExtendScript获取标语
+                        if (typeof csInterface !== 'undefined' && csInterface) {
+                            try {
+                                // 优先使用本地存储的标语
+                                var localSlogan = localStorage.getItem('uiineed-slogan');
+                                if (localSlogan) {
+                                    return localSlogan;
+                                }
+                                
+                                // 尝试从ExtendScript获取
+                                var self = this;
+                                csInterface.evalScript('$.todo.getSlogan()', function(result) {
+                                    try {
+                                        var response = JSON.parse(result);
+                                        if (response.success && response.slogan) {
+                                            localStorage.setItem('uiineed-slogan', response.slogan);
+                                            self.slogan = response.slogan;
+                                        }
+                                    } catch(e) {
+                                        console.error("获取标语失败:", e);
+                                    }
+                                });
+                            } catch(e) {
+                                console.error("调用ExtendScript获取标语失败:", e);
+                            }
+                        }
+                        
+                        // 如果上述过程中没有设置slogan，则使用本地存储或默认值
+                        return localStorage.getItem('uiineed-slogan') || "今日事今日毕，勿将今事待明日!.☕";
                     },
                 contorlScreen:function(){
                     if(this.windowWidth < 768){
@@ -901,13 +1020,57 @@
                     this.popShow = !this.popShow;//取反
                     },
                 shortCutAction: function(){
+                        // 重置动画状态
+                        this.sidebarEntering = false;
+                        this.sidebarExiting = false;
+                        
+                        if(!this.isShow) {
+                            // 打开侧边栏时添加进场动画
+                            this.sidebarEntering = true;
+                            setTimeout(() => {
+                                this.sidebarEntering = false;
+                            }, 300);
+                        } else {
+                            // 关闭侧边栏时添加退场动画
+                            this.sidebarExiting = true;
+                            setTimeout(() => {
+                                this.isShow = !this.isShow;
+                                this.sidebarExiting = false;
+                                this.shortCut = this.isShow ? '关' : '开✨';
+                            }, 300);
+                            return;
+                        }
+                        
                         this.isShow = !this.isShow;
-                    if(this.isShow){
-                        return this.shortCut = '关'
-                    }else{
-                        return this.shortCut = '开✨'
+                        this.shortCut = this.isShow ? '关' : '开✨';
+                    },
+                onSidebarMouseEnter: function() {
+                    this.isMouseOverSidebar = true;
+                    // 清除自动关闭的定时器
+                    if (this.sidebarTimer) {
+                        clearTimeout(this.sidebarTimer);
+                        this.sidebarTimer = null;
                     }
-
+                    
+                    // 移除鼠标悬浮时自动打开侧边栏的功能
+                    // 只有当侧边栏已经打开时才响应鼠标悬浮
+                },
+                onSidebarMouseLeave: function() {
+                    this.isMouseOverSidebar = false;
+                    // 设置定时器，0.5秒后关闭侧边栏（仅当侧边栏已经是打开状态时）
+                    this.sidebarTimer = setTimeout(() => {
+                        if (!this.isShow && !this.isMouseOverSidebar) {
+                            // 重置动画状态
+                            this.sidebarEntering = false;
+                            this.sidebarExiting = true;
+                            
+                            setTimeout(() => {
+                                this.isShow = true;
+                                this.sidebarExiting = false;
+                                this.shortCut = '关';
+                            }, 300);
+                        }
+                    }, 500);
                 },
                 copyEmail: function() {
                     const email = "2655283737@qq.com";
@@ -1271,6 +1434,13 @@
                                                         // 使用 ExtendScript 返回并处理过的数据更新 Vue
                                                         self.todos = evalResponse.data;
                                                         todoStorage.save(self.todos); // 保存到 localStorage
+                                                        
+                                                        // 处理标语更新
+                                                        if (evalResponse.slogan) {
+                                                            localStorage.setItem('uiineed-slogan', evalResponse.slogan);
+                                                            self.slogan = evalResponse.slogan;
+                                                        }
+                                                        
                                                         alert('预设已成功导入并覆盖本地 todo.list！');
                                                         // self.currentFilter = 'all'; // 可选：重置筛选器
                                                     } else {
@@ -1312,6 +1482,13 @@
                                                         // 使用 ExtendScript 返回并处理过的数据更新 Vue
                                                         self.todos = result.data;
                                                         todoStorage.save(self.todos); // 保存到 localStorage
+                                                        
+                                                        // 处理标语更新
+                                                        if (result.slogan) {
+                                                            localStorage.setItem('uiineed-slogan', result.slogan);
+                                                            self.slogan = result.slogan;
+                                                        }
+                                                        
                                                         self.showToast('预设已成功导入并覆盖本地 todo.list！', 'success');
                                                         self.currentFilter = 'all'; // 重置筛选器以显示所有任务
                                                     } else {
@@ -1344,6 +1521,21 @@
                             tempFileInput.click();
                         }
                     },
+                handleDocumentClick: function(event) {
+                    // 判断点击是否在侧边栏外部
+                    const sideBar = document.querySelector('.side-bar');
+                    if (sideBar && !this.isShow && !sideBar.contains(event.target)) {
+                        // 点击在侧边栏外部，关闭侧边栏
+                        this.sidebarEntering = false;
+                        this.sidebarExiting = true;
+                        
+                        setTimeout(() => {
+                            this.isShow = true;
+                            this.sidebarExiting = false;
+                            this.shortCut = '关';
+                        }, 300);
+                    }
+                },
             },
                 mounted() {
                     this.show = true;
@@ -1359,10 +1551,19 @@
                     // 新增：Alt键事件监听
                     window.addEventListener('keydown', this.handleGlobalKeyDown);
                     window.addEventListener('keyup', this.handleGlobalKeyUp);
+                    
+                    // 添加点击空白处关闭侧边栏的事件监听
+                    document.addEventListener('click', this.handleDocumentClick);
                 },
                 beforeDestroy() { // 新增：移除Alt键事件监听
                     window.removeEventListener('keydown', this.handleGlobalKeyDown);
                     window.removeEventListener('keyup', this.handleGlobalKeyUp);
+                    document.removeEventListener('click', this.handleDocumentClick);
+                    
+                    // 清除可能存在的定时器
+                    if (this.sidebarTimer) {
+                        clearTimeout(this.sidebarTimer);
+                    }
                 },
                 directives: {
                     focus: {

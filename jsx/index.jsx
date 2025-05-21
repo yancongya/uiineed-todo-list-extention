@@ -20,6 +20,22 @@ $.todo = {
                  return JSON.stringify({success: false, error: "getStoragePath 失败: " + path});
             }
 
+            // 获取标语（如果在localStorage中存在）
+            var slogan = "";
+            try {
+                if (app.settings.haveSetting("uiineed-todo-list", "slogan")) {
+                    slogan = app.settings.getSetting("uiineed-todo-list", "slogan");
+                }
+            } catch(e) {
+                // 忽略错误，如果无法获取标语，继续保存待办事项
+            }
+
+            // 创建包含标语的存储对象
+            var saveData = {
+                slogan: slogan,
+                todos: todos
+            };
+
             filePath = path + "todo.list";
             var file = new File(filePath);
             
@@ -35,7 +51,8 @@ $.todo = {
                 return JSON.stringify({success: false, error: "无法打开文件进行写入。路径: " + decodeURI(file.fsName) + ". 错误: " + file.error});
             }
             
-            var writeSuccess = file.write(JSON.stringify(todos, null, 2));
+            // 保存包含标语的完整数据对象
+            var writeSuccess = file.write(JSON.stringify(saveData, null, 2));
             if (!writeSuccess) {
                  var writeError = file.error;
                  file.close(); // Attempt to close even if write failed
@@ -78,7 +95,7 @@ $.todo = {
             if (!parentFolder.exists) {
                 return JSON.stringify({success: true, data: [], message: "父文件夹 " + decodeURI(parentFolder.fsName) + " 不存在，因此 todo.list 文件也不存在。" });
             }
-
+            
             if (!file.exists) {
                 return JSON.stringify({success: true, data: [], message: "文件不存在于路径: " + decodeURI(file.fsName)});
             }
@@ -94,12 +111,36 @@ $.todo = {
             if (readError) {
                  return JSON.stringify({success: false, error: "读取文件时出错。路径: " + decodeURI(file.fsName) + ". 错误: " + readError, data: []});
             }
+
+            // 尝试解析数据
+            var parsedData = JSON.parse(content);
             
-            return JSON.stringify({
-                success: true, 
-                data: JSON.parse(content),
-                path: decodeURI(file.fsName)
-            });
+            // 检查数据格式 - 如果是新格式（包含slogan和todos的对象）
+            if (parsedData && parsedData.todos) {
+                // 保存slogan到ExtendScript设置
+                if (parsedData.slogan) {
+                    try {
+                        app.settings.saveSetting("uiineed-todo-list", "slogan", parsedData.slogan);
+                    } catch(e) {
+                        // 忽略错误，继续返回待办事项
+                    }
+                }
+                
+                return JSON.stringify({
+                    success: true, 
+                    data: parsedData.todos,
+                    slogan: parsedData.slogan,
+                    path: decodeURI(file.fsName)
+                });
+            }
+            // 兼容旧格式（仅todos数组）
+            else {
+                return JSON.stringify({
+                    success: true, 
+                    data: parsedData,
+                    path: decodeURI(file.fsName)
+                });
+            }
         } catch (e) {
             return JSON.stringify({success: false, error: "加载时发生异常: " + e.toString() + ". 尝试的文件路径: " + (filePath ? decodeURI(filePath) : (path ? decodeURI(path) + "todo.list" : "未知")), data: []});
         }
@@ -451,9 +492,9 @@ $.todo = {
             'Z';
     },
 
-    // 新增：导入并替换数据
+    // 更新：导入并替换数据，支持标语
     importAndReplaceData: function(importedDataString) {
-        var result = { success: false, error: '', data: null };
+        var result = { success: false, error: '', data: null, slogan: null };
         try {
             var storagePath = this.getStoragePath(); // 使用 this 调用
             if (storagePath.indexOf("ERROR_IN_GETSTORAGEPATH") === 0) {
@@ -470,21 +511,35 @@ $.todo = {
                 return JSON.stringify(result);
             }
 
-            if (!parsedData || typeof parsedData.length !== 'number') { 
-                result.error = "导入的数据必须是一个 JSON 数组。";
+            // 检查数据结构 - 支持新旧两种格式
+            var todos = [];
+            var slogan = null;
+
+            // 新格式: {slogan: "...", todos: [...]}
+            if (parsedData && typeof parsedData === 'object' && parsedData.todos) {
+                todos = parsedData.todos;
+                slogan = parsedData.slogan;
+            }
+            // 旧格式: [...]
+            else if (Array.isArray(parsedData)) {
+                todos = parsedData;
+            }
+            else {
+                result.error = "导入的数据格式无效";
                 return JSON.stringify(result);
             }
 
+            // 处理待办事项
             var processedTodos = [];
-            for (var i = 0; i < parsedData.length; i++) {
-                var item = parsedData[i];
+            for (var i = 0; i < todos.length; i++) {
+                var item = todos[i];
                 // 基础验证，确保 title 存在且为字符串
                 if (item && typeof item.title === 'string') { 
                     processedTodos.push({
                         id: this.generateId(), // 使用 this 调用
                         title: item.title,
-                        completed: false,        
-                        archived: false,         
+                        completed: item.completed || false,        
+                        removed: item.removed || false,         
                         color: item.color || '#ffffff', 
                         createdDate: item.createdDate || this.getISOStringForExtendScript(new Date()), // 使用新的辅助函数
                         dueDate: item.dueDate || null, // 确保有默认值
@@ -494,8 +549,23 @@ $.todo = {
                     });
                 }
             }
+
+            // 如果有标语，保存到ExtendScript设置
+            if (slogan) {
+                try {
+                    app.settings.saveSetting("uiineed-todo-list", "slogan", slogan);
+                } catch(e) {
+                    // 忽略错误，继续保存待办事项
+                }
+            }
             
-            var dataString = JSON.stringify(processedTodos, null, 4); // 使用 4 个空格进行美化
+            // 准备完整的保存数据（包含标语）
+            var saveData = {
+                slogan: slogan,
+                todos: processedTodos
+            };
+            
+            var dataString = JSON.stringify(saveData, null, 4); // 使用 4 个空格进行美化
 
             file.encoding = "UTF-8";
             if (!file.open("w")) {
@@ -527,12 +597,104 @@ $.todo = {
             }
 
             result.success = true;
-            result.data = processedTodos; 
+            result.data = processedTodos;
+            result.slogan = slogan;
             return JSON.stringify(result);
 
         } catch (e) {
             result.error = "导入并替换数据时发生异常: " + e.toString();
             return JSON.stringify(result);
+        }
+    },
+
+    // 新增方法：保存标语
+    saveSlogan: function(sloganText) {
+        try {
+            // 保存到设置
+            app.settings.saveSetting("uiineed-todo-list", "slogan", sloganText);
+
+            // 也尝试更新todo.list文件中的标语
+            var path = this.getStoragePath();
+            if (path.indexOf("ERROR_IN_GETSTORAGEPATH") === 0) {
+                return JSON.stringify({success: false, error: "getStoragePath 失败: " + path});
+            }
+
+            var filePath = path + "todo.list";
+            var file = new File(filePath);
+            
+            if (!file.exists) {
+                // 如果文件不存在，只保存设置即可，无需写入文件
+                return JSON.stringify({success: true, message: "标语已保存到设置"});
+            }
+            
+            file.encoding = "UTF-8";
+            if (!file.open("r")) {
+                return JSON.stringify({success: false, error: "无法打开文件进行读取。路径: " + decodeURI(file.fsName)});
+            }
+            
+            var content = file.read();
+            file.close();
+            
+            // 解析现有数据
+            var data;
+            try {
+                data = JSON.parse(content);
+            } catch (e) {
+                return JSON.stringify({success: false, error: "解析文件内容失败: " + e.toString()});
+            }
+            
+            // 区分新旧格式
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                // 新格式
+                data.slogan = sloganText;
+            } else if (Array.isArray(data)) {
+                // 旧格式，转换为新格式
+                data = {
+                    slogan: sloganText,
+                    todos: data
+                };
+            } else {
+                return JSON.stringify({success: false, error: "文件内容格式无效"});
+            }
+            
+            // 写回文件
+            if (!file.open("w")) {
+                return JSON.stringify({success: false, error: "无法打开文件进行写入。路径: " + decodeURI(file.fsName)});
+            }
+            
+            var writeSuccess = file.write(JSON.stringify(data, null, 2));
+            if (!writeSuccess) {
+                file.close();
+                return JSON.stringify({success: false, error: "写入文件失败。路径: " + decodeURI(file.fsName)});
+            }
+            
+            file.close();
+            
+            return JSON.stringify({success: true});
+        } catch (e) {
+            return JSON.stringify({success: false, error: "保存标语时发生异常: " + e.toString()});
+        }
+    },
+    
+    // 新增方法：获取标语
+    getSlogan: function() {
+        try {
+            var slogan = "";
+            
+            // 从设置获取
+            if (app.settings.haveSetting("uiineed-todo-list", "slogan")) {
+                slogan = app.settings.getSetting("uiineed-todo-list", "slogan");
+            }
+            
+            return JSON.stringify({
+                success: true,
+                slogan: slogan
+            });
+        } catch (e) {
+            return JSON.stringify({
+                success: false,
+                error: "获取标语时发生异常: " + e.toString()
+            });
         }
     }
 };
