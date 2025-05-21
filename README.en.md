@@ -118,6 +118,15 @@ Contributions and suggestions are welcome!
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## 💰 Support the Author
+
+Development takes time and effort. If this project helps you, please consider supporting me!
+
+<div align="center">
+  <img src="public/img/shoukuanma.jpg" alt="Payment QR Code" style="width: 300px; border-radius: 8px;">
+  <p style="margin-top: 10px;">You can also support me via <a href="https://afdian.tv/a/tycon" target="_blank">Afdian</a> platform</p>
+</div>
+
 ## ❗ Notes
 
 - Restart AE after first installation for normal use
