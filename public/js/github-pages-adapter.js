@@ -99,13 +99,29 @@
             infoBar.style.bottom = '0';
             infoBar.style.left = '0';
             infoBar.style.right = '0';
-            infoBar.style.backgroundColor = 'rgba(255, 235, 59, 0.9)';
-            infoBar.style.color = '#333';
+            infoBar.style.backgroundColor = 'rgba(173, 216, 230, 0.8)';
+            infoBar.style.color = '#444';
             infoBar.style.textAlign = 'center';
             infoBar.style.padding = '5px';
             infoBar.style.fontSize = '12px';
             infoBar.style.zIndex = '9999';
-            infoBar.innerHTML = '当前在GitHub Pages环境运行，部分AE功能不可用。数据保存在浏览器本地存储中。';
+            infoBar.style.borderTop = '1px solid rgba(120, 180, 220, 0.5)';
+            infoBar.style.boxShadow = '0 -2px 5px rgba(0, 0, 0, 0.05)';
+            
+            // 创建链接元素
+            var link = document.createElement('a');
+            link.href = 'https://github.com/yancongya/Uiineed-Todo-List-For-AE';
+            link.target = '_blank';
+            link.textContent = 'GitHub Pages';
+            link.style.color = '#1E88E5';
+            link.style.fontWeight = 'bold';
+            link.style.textDecoration = 'none';
+            
+            // 组装HTML内容
+            infoBar.textContent = '当前为web测试环境，基于';
+            infoBar.appendChild(link);
+            infoBar.appendChild(document.createTextNode('搭建。部分AE功能不可用。'));
+            
             document.body.appendChild(infoBar);
         });
     }
