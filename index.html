@@ -138,10 +138,16 @@
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* 更新过渡效果，移除background-color */
         }
 
-        /* 为特定的 #saveLocal 按钮添加背景色悬浮效果 */
-        #saveLocal:hover {
-            background-color: #e9e9e9; /* 一个示例的浅灰色背景 */
-            /* 它仍会继承 .btn-small:hover 的 transform 和 box-shadow */
+        /* 移除之前为 #saveLocal:hover 的特定样式 */
+        /* #saveLocal:hover {
+            background-color: #e9e9e9; 
+        } */
+
+        /* 为新的 .btn-data-action 类定义统一的黄色悬浮背景 */
+        .btn-data-action:hover {
+            background-color: #ffeb3b; /* 一个明亮的黄色，请根据实际需要调整 */
+            color: #333; /* 确保文本在黄色背景上可读 */
+            /* 这里的 transform 和 box-shadow 会被 .btn-small:hover 的规则覆盖，如果需要不同效果则需调整 */
         }
     </style>
     
@@ -619,13 +625,13 @@
                             </ul>
                             <ul class="todo-func-list datasave">
                                 <li v-if="leftTodosCount">
-                              <input type="button" value="导出数据"  class="btn-small  action-download" id="download" onclick="handleClickDownload()"></input>
+                              <input type="button" value="导出数据"  class="btn-small action-download btn-data-action" id="download" onclick="handleClickDownload()"></input>
                                 </li>
                                 <li>
-                                <input type="button" :value="saveLocalButtonComputedText" class="btn-small action-save-local" id="saveLocal" @click="handleSaveClick" @mouseenter="isMouseOverSaveButton = true" @mouseleave="isMouseOverSaveButton = false" />
+                                <input type="button" :value="saveLocalButtonComputedText" class="btn-small action-save-local btn-data-action" id="saveLocal" @click="handleSaveClick" @mouseenter="isMouseOverSaveButton = true" @mouseleave="isMouseOverSaveButton = false" />
                                 </li>
                                 <li>
-                             <input  value="导入(txt/json)" type="button" class="btn-small action-import" id="import" />
+                             <input  value="导入(txt/json)" type="button" class="btn-small action-import btn-data-action" id="import" />
                                 <!-- <input type="file" id="import-file" accept=".txt,.json" style="display:none"> -->
                                 </li>
                             </ul>
