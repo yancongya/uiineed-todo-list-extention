@@ -1,6 +1,6 @@
 # Uiineed Todo List - AE扩展
 
-English | [简体中文](README.md)
+[English](README.en.md)|简体中文
 
 > 原创作者：[@Rico的设计漫想](https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f) | [原项目地址](https://github.com/ricocc/uiineed-todo-list)
 
