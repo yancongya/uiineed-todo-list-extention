@@ -143,9 +143,3 @@ This project also supports GitHub Pages deployment. You can access the online de
 - GitHub Pages link:
 - `https://todo.xn--jcs561df75a.space/`
 - `https://yancongya.github.io/Uiineed-Todo-List-For-AE/`
-
-### Notes on the Online Demo Version
-
-- The online demo version has basically the same functionality as the extension version, but cannot perform extension-specific operations
-- The online version uses the browser's localStorage for data storage, different devices cannot synchronize
-- The online version is mainly for quick experience and feature preview; for complete functionality, please use the extension version

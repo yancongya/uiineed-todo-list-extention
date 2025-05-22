@@ -1,5 +1,7 @@
 # Uiineed Todo List - AE扩展
 
+English | [简体中文](README.md)
+
 > 原创作者：[@Rico的设计漫想](https://www.xiaohongshu.com/user/profile/5f2b6903000000000101f51f) | [原项目地址](https://github.com/ricocc/uiineed-todo-list)
 
 一个为Adobe After Effects设计的待办事项扩展插件，基于[Uiineed Todo List](https://github.com/ricocc/uiineed-todo-list) 进行二次开发，支持流畅动效和本地数据存储，帮助设计师在AE高效管理时间流程。
@@ -108,7 +110,6 @@
 </div>
 </div>
 
-
 ## 📄 许可证
 
 本项目基于 MIT 许可证开源。详情请查看 [LICENSE](./LICENSE) 文件。
@@ -129,7 +130,6 @@
 
 <div align="center">
   <img src="public/img/shoukuanma.jpg" alt="收款码" style="width: 300px; border-radius: 8px;">
-  <p style="margin-top: 10px;">您也可以通过<a href="https://afdian.tv/a/tycon" target="_blank">爱发电</a>平台支持我的创作</p>
 </div>
 
 ## ❗ 注意事项
@@ -154,3 +154,4 @@
 - 在线演示版本功能与扩展版本基本一致，但无法进行扩展特有的操作
 - 在线版本数据使用浏览器的localStorage存储，不同设备无法同步
 - 在线版本主要用于快速体验和功能预览，完整功能请使用扩展版本
+
