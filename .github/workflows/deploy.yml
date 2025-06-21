@@ -1,21 +1,31 @@
-name: Deploy to GitHub Pages
+name: Deploy VitePress to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # 或者您的默认分支名
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
         
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'docs/package-lock.json'
           
       - name: Install Dependencies
         run: |
@@ -33,3 +43,5 @@ jobs:
           folder: docs/.vitepress/dist
           branch: gh-pages
           target-folder: doc
+          clean: true
+          single-commit: true
