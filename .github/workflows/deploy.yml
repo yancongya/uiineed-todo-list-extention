@@ -19,12 +19,17 @@ jobs:
           
       - name: Install Dependencies
         run: |
-          if [ -f "package.json" ]; then
-            npm ci
-          fi
+          cd docs
+          npm ci
+          
+      - name: Build VitePress
+        run: |
+          cd docs
+          npm run build
           
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .  # 部署整个项目
-          branch: gh-pages 
+          folder: docs/.vitepress/dist
+          branch: gh-pages
+          target-folder: doc
