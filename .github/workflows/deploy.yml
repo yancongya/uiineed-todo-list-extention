@@ -20,23 +20,6 @@ jobs:
         with:
           fetch-depth: 0
         
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'docs/package-lock.json'
-          
-      - name: Install VitePress Dependencies
-        run: |
-          cd docs
-          npm ci
-          
-      - name: Build VitePress Documentation
-        run: |
-          cd docs
-          npm run docs:build
-          
       - name: Prepare Deployment Structure
         run: |
           # 创建部署目录
@@ -49,9 +32,9 @@ jobs:
           cp -r lib deploy-temp/ || true
           cp -r CSXS deploy-temp/ || true
           
-          # 复制VitePress构建结果到doc子目录
+          # 直接复制docs目录到doc子目录（不构建VitePress）
           mkdir -p deploy-temp/doc
-          cp -r docs/.vitepress/dist/* deploy-temp/doc/
+          cp -r docs/* deploy-temp/doc/
           
           # 创建.nojekyll文件
           touch deploy-temp/.nojekyll
