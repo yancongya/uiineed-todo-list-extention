@@ -5,16 +5,10 @@ hero:
   name: "UINeed Todo AE"
   text: "专为AE设计师打造的待办事项扩展"
   tagline: 简洁美观，与Adobe After Effects无缝集成的任务管理工具
-  image:
-    src: /hero-image.png
-    alt: UINeed Todo AE
   actions:
     - theme: brand
       text: 快速开始
       link: /guide/getting-started
-    - theme: alt
-      text: 在线演示
-      link: https://yancongya.github.io/Uiineed-Todo-List-For-AE/
     - theme: alt
       text: GitHub
       link: https://github.com/yancongya/Uiineed-Todo-List-For-AE
@@ -48,12 +42,6 @@ features:
 - **专业优化**：针对AE工作流程进行优化设计
 - **数据安全**：本地存储，保护您的隐私
 - **开源免费**：基于MIT许可证，完全免费使用
-
-## 快速预览
-
-<div style="text-align: center; margin: 2rem 0;">
-  <img src="/screenshot-main.jpg" alt="主界面截图" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
-</div>
 
 ## 开始使用
 

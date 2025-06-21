@@ -3,10 +3,10 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'UINeed Todo AE',
   description: '专为Adobe After Effects设计的待办事项扩展插件',
-  base: process.env.NODE_ENV === 'production' ? '/Uiineed-Todo-List-For-AE/' : '/',
+  base: '/',
   
   head: [
-    ['link', { rel: 'icon', href: process.env.NODE_ENV === 'production' ? '/Uiineed-Todo-List-For-AE/favicon.ico' : '/favicon.ico' }]
+    ['link', { rel: 'icon', href: '/favicon.ico' }]
   ],
 
   themeConfig: {
