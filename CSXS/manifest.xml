@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest Version="7.0" ExtensionBundleId="com.uiineed.todo" ExtensionBundleVersion="1.0.0"
+                   ExtensionBundleName="UINeed Todo@烟囱鸭" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ExtensionList>
+        <Extension Id="com.uiineed.todo.panel" Version="1.0.0" />
+    </ExtensionList>
+    <ExecutionEnvironment>
+        <HostList>
+            <Host Name="AEFT" Version="[15.0,99.9]" />
+        </HostList>
+        <LocaleList>
+            <Locale Code="All" />
+        </LocaleList>
+        <RequiredRuntimeList>
+            <RequiredRuntime Name="CSXS" Version="7.0" />
+        </RequiredRuntimeList>
+    </ExecutionEnvironment>
+    <DispatchInfoList>
+        <Extension Id="com.uiineed.todo.panel">
+            <DispatchInfo>
+                <Resources>
+                    <MainPath>./index.html</MainPath>
+                    <ScriptPath>./jsx/index.jsx</ScriptPath>
+                    <CEFCommandLine>
+                        <Parameter>--enable-nodejs</Parameter>
+                        <Parameter>--mixed-context</Parameter>
+                    </CEFCommandLine>
+                </Resources>
+                <Lifecycle>
+                    <AutoVisible>true</AutoVisible>
+                </Lifecycle>
+                <UI>
+                    <Type>Panel</Type>
+                    <Menu>UINeed Todo@烟囱鸭</Menu>
+                    <Geometry>
+                        <Size>
+                            <Width>380</Width>
+                            <Height>600</Height>
+                        </Size>
+                        <MinSize>
+                            <Width>300</Width>
+                            <Height>400</Height>
+                        </MinSize>
+                        <MaxSize>
+                            <Width>800</Width>
+                            <Height>1000</Height>
+                        </MaxSize>
+                    </Geometry>
+                    <Icons>
+                        <Icon Type="Normal">./public/img/favicon.png</Icon>
+                        <Icon Type="RollOver">./public/img/favicon.png</Icon>
+                        <Icon Type="DarkNormal">./public/img/favicon.png</Icon>
+                        <Icon Type="DarkRollOver">./public/img/favicon.png</Icon>
+                    </Icons>
+                </UI>
+            </DispatchInfo>
+        </Extension>
+    </DispatchInfoList>
+</ExtensionManifest> 
