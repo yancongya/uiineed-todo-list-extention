@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pages: write
       id-token: write
     
@@ -26,18 +26,26 @@ jobs:
           mkdir -p deploy-temp
           
           # 复制主项目文件到根目录
-          cp -r public/* deploy-temp/ || true
-          cp index.html deploy-temp/ || true
-          cp -r jsx deploy-temp/ || true
-          cp -r lib deploy-temp/ || true
-          cp -r CSXS deploy-temp/ || true
+          if [ -d "public" ]; then cp -r public/* deploy-temp/ 2>/dev/null || true; fi
+          if [ -f "index.html" ]; then cp index.html deploy-temp/; fi
+          if [ -d "jsx" ]; then cp -r jsx deploy-temp/; fi
+          if [ -d "lib" ]; then cp -r lib deploy-temp/; fi
+          if [ -d "CSXS" ]; then cp -r CSXS deploy-temp/; fi
           
           # 直接复制docs目录到doc子目录（不构建VitePress）
           mkdir -p deploy-temp/doc
-          cp -r docs/* deploy-temp/doc/
+          if [ -d "docs" ]; then cp -r docs/* deploy-temp/doc/ 2>/dev/null || true; fi
           
           # 创建.nojekyll文件
           touch deploy-temp/.nojekyll
+          
+          # 验证部署目录内容
+          echo "Deploy directory contents:"
+          ls -la deploy-temp/
+          if [ -d "deploy-temp/doc" ]; then
+            echo "Doc directory contents:"
+            ls -la deploy-temp/doc/
+          fi
           
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -46,3 +54,4 @@ jobs:
           branch: gh-pages
           clean: true
           single-commit: true
+          token: ${{ secrets.GITHUB_TOKEN }}
