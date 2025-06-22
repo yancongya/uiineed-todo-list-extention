@@ -28,7 +28,15 @@ export default defineConfig({
     },
     ssr: {
       noExternal: ['vitepress']
+    },
+    define: {
+      global: 'globalThis'
     }
+  },
+  
+  // SSR配置
+  ssr: {
+    noExternal: ['vitepress']
   },
   
   // 站点地图
