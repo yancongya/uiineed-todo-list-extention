@@ -5,15 +5,15 @@ export default defineConfig({
   cleanUrls: true,
   metaChunk: true,
   
-  // PWA支持
+  // 基础配置
   head: [
     ['link', { rel: 'icon', href: '/icon-192.png' }],
     ['meta', { name: 'theme-color', content: '#646cff' }],
     ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' }],
-    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'default' }],
     ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
-    ['link', { rel: 'manifest', href: '/manifest.json' }]
+    ['script', { src: '/doc/js/about-panel.js' }]
   ],
   title: 'TodoListAE-doc',
   description: '专为Adobe After Effects设计的待办事项扩展插件',
@@ -112,7 +112,14 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/yancongya/Uiineed-Todo-List-For-AE' }
+      { icon: 'github', link: 'https://github.com/yancongya/Uiineed-Todo-List-For-AE' },
+      { 
+        icon: {
+          svg: '<img src="/doc/author.gif" alt="关于我" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="document.getElementById(\'about-panel-overlay\').style.display=\'block\'; event.preventDefault(); event.stopPropagation(); return false;"/>'
+        }, 
+        link: 'javascript:void(0)',
+        ariaLabel: '关于我'
+      }
     ],
 
     footer: {
