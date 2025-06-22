@@ -115,7 +115,7 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/yancongya/Uiineed-Todo-List-For-AE' },
       { 
         icon: {
-          svg: '<img src="/doc/author.gif" alt="关于我" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="document.getElementById(\'about-panel-overlay\').style.display=\'block\'; event.preventDefault(); event.stopPropagation(); return false;"/>'
+          svg: '<img src="/doc/author.gif" alt="关于我" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; cursor: pointer;" onclick="document.getElementById(\'about-panel-overlay\').style.display=\'flex\'; event.preventDefault(); event.stopPropagation(); return false;"/>'
         }, 
         link: 'javascript:void(0)',
         ariaLabel: '关于我'
