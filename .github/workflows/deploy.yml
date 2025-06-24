@@ -13,32 +13,56 @@ jobs:
       contents: write
       pages: write
       id-token: write
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'docs/package-lock.json'
+
+      - name: Install VitePress Dependencies
+        run: |
+          cd docs
+          npm ci
+
+      - name: Build VitePress Documentation
+        run: |
+          cd docs
+          npm run docs:build
+
       - name: Prepare Deployment Structure
         run: |
           # 创建部署目录
           mkdir -p deploy-temp
-          
+
           # 复制主项目文件到根目录
           if [ -d "public" ]; then cp -r public/* deploy-temp/ 2>/dev/null || true; fi
           if [ -f "index.html" ]; then cp index.html deploy-temp/; fi
           if [ -d "jsx" ]; then cp -r jsx deploy-temp/; fi
           if [ -d "lib" ]; then cp -r lib deploy-temp/; fi
           if [ -d "CSXS" ]; then cp -r CSXS deploy-temp/; fi
-          
-          # 直接复制docs目录到doc子目录（不构建VitePress）
-          mkdir -p deploy-temp/doc
-          if [ -d "docs" ]; then cp -r docs/* deploy-temp/doc/ 2>/dev/null || true; fi
-          
+          if [ -f "CNAME" ]; then cp CNAME deploy-temp/; fi
+
+          # 复制构建后的VitePress文档到doc子目录
+          if [ -d "docs/.vitepress/dist" ]; then
+            mkdir -p deploy-temp/doc
+            cp -r docs/.vitepress/dist/* deploy-temp/doc/
+            echo "VitePress documentation built and copied successfully"
+          else
+            echo "Error: VitePress build output not found"
+            exit 1
+          fi
+
           # 创建.nojekyll文件
           touch deploy-temp/.nojekyll
-          
+
           # 验证部署目录内容
           echo "Deploy directory contents:"
           ls -la deploy-temp/
@@ -46,7 +70,7 @@ jobs:
             echo "Doc directory contents:"
             ls -la deploy-temp/doc/
           fi
-          
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
