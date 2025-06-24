@@ -12,8 +12,7 @@ export default defineConfig({
     ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' }],
     ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'default' }],
-    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
-    ['script', { src: '/doc/js/about-panel.js' }]
+    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }]
   ],
   title: 'TodoListAE-doc',
   description: '专为Adobe After Effects设计的待办事项扩展插件',

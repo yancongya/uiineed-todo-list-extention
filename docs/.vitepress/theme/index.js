@@ -14,11 +14,13 @@ export default {
     
     // 页面切换动画
     const initPageTransition = () => {
+      if (typeof window === 'undefined') return
+
       const content = document.querySelector('.VPContent')
       if (content) {
         content.style.opacity = '0'
         content.style.transform = 'translateY(20px)'
-        
+
         nextTick(() => {
           content.style.transition = 'all 0.3s cubic-bezier(0.33, 1, 0.68, 1)'
           content.style.opacity = '1'
@@ -45,17 +47,20 @@ export default {
       initInteractiveElements()
       initThemeToggle()
       initProgressBar()
+      loadAboutPanel()
     })
   }
 }
 
 // 滚动动画
 function initScrollAnimations() {
+  if (typeof window === 'undefined') return
+
   const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
   }
-  
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -64,12 +69,12 @@ function initScrollAnimations() {
       }
     })
   }, observerOptions)
-  
+
   // 观察需要动画的元素
   const animatedElements = document.querySelectorAll(
     '.vp-doc h1, .vp-doc h2, .vp-doc h3, .vp-doc p, .VPFeature'
   )
-  
+
   animatedElements.forEach(el => {
     el.style.opacity = '0'
     el.style.transform = 'translateY(30px)'
@@ -80,31 +85,33 @@ function initScrollAnimations() {
 
 // 交互元素增强
 function initInteractiveElements() {
+  if (typeof window === 'undefined') return
+
   // 按钮波纹效果
   const buttons = document.querySelectorAll('.VPButton')
   buttons.forEach(button => {
     button.addEventListener('click', createRipple)
   })
-  
+
   // 卡片悬停效果
   const features = document.querySelectorAll('.VPFeature')
   features.forEach(feature => {
     feature.addEventListener('mouseenter', () => {
       feature.style.transform = 'translateY(-8px) scale(1.02)'
     })
-    
+
     feature.addEventListener('mouseleave', () => {
       feature.style.transform = 'translateY(0) scale(1)'
     })
   })
-  
+
   // 导航链接动画
   const navLinks = document.querySelectorAll('.VPNavBarMenuLink')
   navLinks.forEach(link => {
     link.addEventListener('mouseenter', () => {
       link.style.transform = 'translateY(-2px)'
     })
-    
+
     link.addEventListener('mouseleave', () => {
       link.style.transform = 'translateY(0)'
     })
@@ -158,6 +165,8 @@ function createRipple(event) {
 
 // 主题切换动画
 function initThemeToggle() {
+  if (typeof window === 'undefined') return
+
   const themeToggle = document.querySelector('.VPSwitchAppearance')
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
@@ -171,6 +180,8 @@ function initThemeToggle() {
 
 // 阅读进度条
 function initProgressBar() {
+  if (typeof window === 'undefined') return
+
   // 创建进度条
   const progressBar = document.createElement('div')
   progressBar.className = 'reading-progress'
@@ -185,7 +196,7 @@ function initProgressBar() {
     transition: width 0.1s ease;
   `
   document.body.appendChild(progressBar)
-  
+
   // 更新进度
   function updateProgress() {
     const scrollTop = window.pageYOffset
@@ -193,7 +204,7 @@ function initProgressBar() {
     const scrollPercent = (scrollTop / docHeight) * 100
     progressBar.style.width = Math.min(scrollPercent, 100) + '%'
   }
-  
+
   window.addEventListener('scroll', updateProgress)
   updateProgress()
 }
@@ -239,6 +250,27 @@ function initKeyboardNavigation() {
       }
     }
   })
+}
+
+// 加载关于我面板脚本
+function loadAboutPanel() {
+  if (typeof window === 'undefined') return
+
+  // 检查脚本是否已经加载
+  if (document.querySelector('script[src="/doc/js/about-panel.js"]')) {
+    return
+  }
+
+  const script = document.createElement('script')
+  script.src = '/doc/js/about-panel.js'
+  script.async = true
+  script.onload = () => {
+    console.log('关于我面板脚本加载成功')
+  }
+  script.onerror = () => {
+    console.error('关于我面板脚本加载失败')
+  }
+  document.head.appendChild(script)
 }
 
 // 初始化所有功能
